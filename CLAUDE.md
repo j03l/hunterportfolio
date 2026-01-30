@@ -21,6 +21,30 @@ npm run build     # Build for production
 npm run preview   # Preview production build
 ```
 
+## Deployment
+
+The site is configured for **Cloudflare Workers** deployment using the `@astrojs/cloudflare` adapter.
+
+### Key Files
+
+- `wrangler.jsonc` - Cloudflare Worker configuration
+- `public/.assetsignore` - Excludes internal Cloudflare files from static assets
+
+### Deploy Commands
+
+```bash
+npm run build           # Build the site (generates dist/_worker.js)
+npx wrangler deploy     # Deploy to Cloudflare Workers
+npx wrangler dev        # Local development with Cloudflare runtime
+```
+
+### Cloudflare Dashboard Settings
+
+When setting up in Cloudflare:
+
+- **Build command**: `npm run build`
+- **Deploy command**: `npx wrangler deploy`
+
 ## Architecture
 
 The project follows a component-based architecture with all customization centralized in `src/config.ts`:
@@ -47,6 +71,7 @@ The project follows a component-based architecture with all customization centra
 ## Working with Components
 
 When modifying components:
+
 1. Components read directly from the imported `siteConfig` object
 2. Use Tailwind utility classes for styling
 3. Maintain the existing monospace font aesthetic
@@ -55,6 +80,7 @@ When modifying components:
 ## Configuration Structure
 
 The `src/config.ts` exports a `siteConfig` object with these sections:
+
 - Basic info: name, title, description, accentColor
 - Social links: email, linkedin, twitter, github (all optional)
 - aboutMe: string
