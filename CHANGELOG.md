@@ -1,5 +1,46 @@
 # Changelog
 
+### 2.1.0 (2026-01-30)
+
+#### Dark Mode Support
+- Added comprehensive dark mode support across the entire site
+- Dark mode automatically follows browser/OS preference via `prefers-color-scheme`
+- Updated Hero section with separate light/dark gradient overlays and programming symbol patterns
+- Updated all text colors with appropriate dark mode variants
+- Added dark mode support for skill tags, project cards, and section backgrounds
+- Configured dark accent colors (yellow-400 for dark, yellow-500 for light)
+
+#### Navigation Enhancements
+- Added active indicator (yellow underline) showing current page/section in header navigation
+- Added Blog and CV links to the main navigation
+- Navigation now correctly highlights the current page across blog posts and CV pages
+- Improved header scroll behavior with dark mode backdrop support
+
+#### New Pages and Features
+- Added Blog section with index page and individual post pages
+- Added CV page
+- Added 404 error page
+- Added RSS feed support (`/rss.xml`)
+- Added project detail pages with case study layout
+- Added style guide page for reference
+
+#### Content Architecture
+- Introduced content collections for blog posts and projects
+- Projects component now integrates with content collection
+- Added BlogCard component for consistent blog post previews
+- Added BaseLayout, BlogPost, and ProjectLayout layouts
+
+#### Component Improvements
+- Made section headings sticky on large screens (About, Projects)
+- Added animated icon transitions on project cards (spinning arrow, globe icon for external links)
+- Internal project links now show "View Case Study" call-to-action
+- Updated Footer and other components with dark mode styles
+
+#### Configuration
+- Added `site` URL to Astro config for proper RSS and sitemap generation
+- Added SEO dependencies (astro-seo, astro-seo-schema, @astrojs/rss)
+- Added optional `accentColorDark` to config for dark mode theming
+
 ### 2.0.0
 
 - Complete rewrite of the template using Astro and Tailwind

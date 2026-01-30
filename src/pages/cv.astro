@@ -1,0 +1,220 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig } from "../config";
+
+const hasExperience = siteConfig.experience && siteConfig.experience.length > 0;
+const hasEducation = siteConfig.education && siteConfig.education.length > 0;
+const hasSkills = siteConfig.skills && siteConfig.skills.length > 0;
+const hasCertifications = siteConfig.cv?.certifications && siteConfig.cv.certifications.length > 0;
+---
+
+<BaseLayout title="CV" description={`Curriculum Vitae of ${siteConfig.name}`}>
+  <main class="min-h-screen bg-white dark:bg-gray-950">
+    <div class="max-w-4xl mx-auto px-6 py-16 sm:py-24">
+      <!-- Header -->
+      <header class="mb-12 print:mb-8">
+        <div
+          class="w-[75px] h-[5px] rounded-full mb-6 bg-yellow-500 dark:bg-yellow-400"
+        >
+        </div>
+        <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+          {siteConfig.name}
+        </h1>
+        <p class="text-xl text-gray-600 dark:text-gray-400 mb-4">{siteConfig.title}</p>
+        <div class="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
+          {
+            siteConfig.social.email && (
+              <a
+                href={`mailto:${siteConfig.social.email}`}
+                class="hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+              >
+                {siteConfig.social.email}
+              </a>
+            )
+          }
+          {
+            siteConfig.social.linkedin && (
+              <a
+                href={siteConfig.social.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+              >
+                LinkedIn
+              </a>
+            )
+          }
+          {
+            siteConfig.social.github && (
+              <a
+                href={siteConfig.social.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+              >
+                GitHub
+              </a>
+            )
+          }
+        </div>
+      </header>
+
+      <!-- Summary -->
+      {
+        siteConfig.cv?.summary && (
+          <section class="mb-12 print:mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Summary</h2>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">{siteConfig.cv.summary}</p>
+          </section>
+        )
+      }
+
+      <!-- Skills -->
+      {
+        hasSkills && (
+          <section class="mb-12 print:mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Skills</h2>
+            <div class="flex flex-wrap gap-2">
+              {siteConfig.skills.map((skill) => (
+                <span
+                  class="px-3 py-1 rounded-full text-sm font-medium bg-yellow-500/15 text-yellow-600 dark:bg-yellow-400/15 dark:text-yellow-400"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <!-- Experience -->
+      {
+        hasExperience && (
+          <section class="mb-12 print:mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Experience</h2>
+            <div class="space-y-8">
+              {siteConfig.experience.map((job) => (
+                <div class="relative pl-6 border-l-2 border-gray-200 dark:border-gray-700">
+                  <div
+                    class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-yellow-500 dark:bg-yellow-400"
+                  />
+                  <div class="mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                      {job.title}
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-400">{job.company}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-500">{job.dateRange}</p>
+                  </div>
+                  <ul class="space-y-1">
+                    {job.bullets.map((bullet) => (
+                      <li class="text-gray-600 dark:text-gray-400 text-sm flex items-start gap-2">
+                        <span
+                          class="mt-2 w-1 h-1 rounded-full flex-shrink-0 bg-yellow-500 dark:bg-yellow-400"
+                        />
+                        {bullet}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <!-- Education -->
+      {
+        hasEducation && (
+          <section class="mb-12 print:mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Education</h2>
+            <div class="space-y-8">
+              {siteConfig.education.map((edu) => (
+                <div class="relative pl-6 border-l-2 border-gray-200 dark:border-gray-700">
+                  <div
+                    class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-yellow-500 dark:bg-yellow-400"
+                  />
+                  <div class="mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                      {edu.degree}
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-400">{edu.school}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-500">{edu.dateRange}</p>
+                  </div>
+                  {edu.achievements && edu.achievements.length > 0 && (
+                    <ul class="space-y-1">
+                      {edu.achievements.map((achievement) => (
+                        <li class="text-gray-600 dark:text-gray-400 text-sm flex items-start gap-2">
+                          <span
+                            class="mt-2 w-1 h-1 rounded-full flex-shrink-0 bg-yellow-500 dark:bg-yellow-400"
+                          />
+                          {achievement}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <!-- Certifications -->
+      {
+        hasCertifications && (
+          <section class="mb-12 print:mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Certifications</h2>
+            <div class="space-y-4">
+              {siteConfig.cv.certifications.map((cert) => (
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                  <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-gray-100">{cert.name}</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">{cert.issuer}</p>
+                  </div>
+                  <span class="text-sm text-gray-500 dark:text-gray-500">{cert.date}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <!-- Print Button -->
+      <div class="print:hidden mt-8">
+        <button
+          onclick="window.print()"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M6 9V2h12v7" />
+            <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" />
+            <rect x="6" y="14" width="12" height="8" />
+          </svg>
+          Print CV
+        </button>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  @media print {
+    @page {
+      margin: 1cm;
+    }
+    body {
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+</style>

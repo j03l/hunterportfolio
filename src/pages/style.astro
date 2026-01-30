@@ -1,0 +1,393 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig } from "../config";
+---
+
+<BaseLayout
+  title="Style Guide"
+  description="Visual style guide and design system reference"
+  noindex={true}
+>
+  <main class="min-h-screen bg-white dark:bg-gray-950">
+    <div class="max-w-5xl mx-auto px-6 py-16 sm:py-24">
+      <!-- Header -->
+      <header class="mb-16">
+        <div
+          class="w-[75px] h-[5px] rounded-full mb-6 bg-yellow-500 dark:bg-yellow-400"
+        ></div>
+        <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          Style Guide
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl">
+          Visual reference for colors, typography, and UI components used throughout the site.
+        </p>
+      </header>
+
+      <!-- Current Accent Color -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Current Accent Color</h2>
+        <div class="flex items-center gap-6 p-6 bg-gray-50 dark:bg-gray-900 rounded-xl">
+          <div
+            class="w-24 h-24 rounded-xl shadow-lg bg-yellow-500 dark:bg-yellow-400"
+          ></div>
+          <div>
+            <p class="font-mono text-lg font-semibold text-gray-900 dark:text-gray-100">{siteConfig.accentColor}</p>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">Defined in <code class="bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded text-sm">src/config.ts</code></p>
+            <div class="flex gap-2 mt-3">
+              <span
+                class="px-3 py-1 rounded-full text-sm font-medium bg-yellow-500/15 text-yellow-600 dark:bg-yellow-400/15 dark:text-yellow-400"
+              >
+                Tag Example
+              </span>
+              <span
+                class="px-3 py-1 rounded-full text-sm font-medium text-white dark:text-gray-900 bg-yellow-500 dark:bg-yellow-400"
+              >
+                Solid Tag
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Yellow Color Scale -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Yellow Scale</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Tailwind CSS default yellow palette.</p>
+        <div class="grid grid-cols-11 gap-1">
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-yellow-50"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">50</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-yellow-100"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">100</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-yellow-200"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">200</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-yellow-300"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">300</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-yellow-400"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">400</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-yellow-500"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">500</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-yellow-600"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">600</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-yellow-700"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">700</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-yellow-800"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">800</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-yellow-900"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">900</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-yellow-950"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">950</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Amber Color Scale -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Amber Scale</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Warmer yellow-orange tones.</p>
+        <div class="grid grid-cols-11 gap-1">
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-amber-50"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">50</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-amber-100"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">100</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-amber-200"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">200</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-amber-300"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">300</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-amber-400"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">400</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-amber-500"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">500</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-amber-600"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">600</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-amber-700"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">700</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-amber-800"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">800</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-amber-900"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">900</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-amber-950"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">950</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Gray Scale -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Gray Scale</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Neutral colors used for text and backgrounds.</p>
+        <div class="grid grid-cols-11 gap-1">
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-gray-50"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">50</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-gray-100"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">100</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-gray-200"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">200</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-gray-300"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">300</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-gray-400"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">400</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-gray-500"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">500</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-gray-600"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">600</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-gray-700"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">700</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-gray-800"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">800</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-gray-900"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">900</p>
+          </div>
+          <div class="text-center">
+            <div class="aspect-square rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-gray-950"></div>
+            <p class="text-xs font-medium mt-2 text-gray-700 dark:text-gray-300">950</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Typography -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Typography</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">IBM Plex Mono is used throughout the site.</p>
+        <div class="space-y-6 bg-gray-50 dark:bg-gray-900 rounded-xl p-6">
+          <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+            <span class="text-xs font-medium text-gray-500 w-24 shrink-0">Heading 1</span>
+            <span class="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-gray-100">The quick brown fox</span>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+            <span class="text-xs font-medium text-gray-500 w-24 shrink-0">Heading 2</span>
+            <span class="text-2xl font-bold text-gray-900 dark:text-gray-100">The quick brown fox jumps</span>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+            <span class="text-xs font-medium text-gray-500 w-24 shrink-0">Heading 3</span>
+            <span class="text-lg font-semibold text-gray-900 dark:text-gray-100">The quick brown fox jumps over</span>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+            <span class="text-xs font-medium text-gray-500 w-24 shrink-0">Body</span>
+            <span class="text-base text-gray-900 dark:text-gray-100">The quick brown fox jumps over the lazy dog</span>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+            <span class="text-xs font-medium text-gray-500 w-24 shrink-0">Small</span>
+            <span class="text-sm text-gray-900 dark:text-gray-100">The quick brown fox jumps over the lazy dog</span>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6">
+            <span class="text-xs font-medium text-gray-500 w-24 shrink-0">Caption</span>
+            <span class="text-xs text-gray-500">The quick brown fox jumps over the lazy dog</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Buttons -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Buttons</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Interactive button styles.</p>
+        <div class="flex flex-wrap gap-4">
+          <button
+            class="px-6 py-2 rounded-lg text-sm font-medium text-white dark:text-gray-900 bg-yellow-500 dark:bg-yellow-400 transition-colors hover:opacity-90 cursor-pointer"
+          >
+            Primary Button
+          </button>
+          <button
+            class="px-6 py-2 rounded-lg text-sm font-medium border-2 border-yellow-500 dark:border-yellow-400 text-yellow-500 dark:text-yellow-400 transition-colors cursor-pointer"
+          >
+            Outline Button
+          </button>
+          <button class="px-6 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer">
+            Secondary Button
+          </button>
+          <button class="px-6 py-2 rounded-lg text-sm font-medium text-gray-400 bg-gray-100 dark:bg-gray-800 cursor-not-allowed" disabled>
+            Disabled
+          </button>
+        </div>
+      </section>
+
+      <!-- Tags/Badges -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Tags & Badges</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Skill tags and status badges.</p>
+        <div class="flex flex-wrap gap-3">
+          {siteConfig.skills.map((skill) => (
+            <span
+              class="px-3 py-1 rounded-full text-sm font-medium bg-yellow-500/15 text-yellow-600 dark:bg-yellow-400/15 dark:text-yellow-400"
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+        <div class="flex flex-wrap gap-3 mt-4">
+          <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">Success</span>
+          <span class="px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400">Warning</span>
+          <span class="px-3 py-1 rounded-full text-sm font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">Error</span>
+          <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">Info</span>
+        </div>
+        <div class="flex flex-wrap gap-3 mt-4">
+          <span class="px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">Default Tag</span>
+          <span class="px-3 py-1 rounded-full text-sm font-medium bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900">Dark Tag</span>
+        </div>
+      </section>
+
+      <!-- Links -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Links</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Text link styles.</p>
+        <div class="space-y-3">
+          <p class="text-gray-900 dark:text-gray-100">
+            This is a <a href="#" class="underline hover:text-gray-500 dark:hover:text-gray-400 transition-colors">default text link</a> in a paragraph.
+          </p>
+          <p class="text-gray-900 dark:text-gray-100">
+            This is an <a
+              href="#"
+              class="underline transition-colors text-yellow-500 dark:text-yellow-400"
+            >accent colored link</a> in a paragraph.
+          </p>
+          <p class="text-gray-600 dark:text-gray-400">
+            Gray text with a <a href="#" class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100 underline transition-colors">darker link</a>.
+          </p>
+        </div>
+      </section>
+
+      <!-- Cards -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Cards</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Card component patterns.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div class="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 hover:bg-white dark:hover:bg-gray-800 hover:shadow-xl hover:border-gray-300 dark:hover:border-gray-700 hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Default Card</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">With hover effect - translates up and adds shadow.</p>
+          </div>
+          <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-lg">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Elevated Card</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">White background with shadow.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Spacing -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Spacing</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Visual spacing reference (Tailwind default scale).</p>
+        <div class="space-y-3">
+          <div class="flex items-center gap-4">
+            <span class="text-xs font-mono text-gray-500 w-16">4 (1rem)</span>
+            <div class="h-4 w-4 rounded bg-amber-400"></div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-xs font-mono text-gray-500 w-16">6 (1.5rem)</span>
+            <div class="h-4 w-6 rounded bg-amber-400"></div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-xs font-mono text-gray-500 w-16">8 (2rem)</span>
+            <div class="h-4 w-8 rounded bg-amber-400"></div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-xs font-mono text-gray-500 w-16">12 (3rem)</span>
+            <div class="h-4 w-12 rounded bg-amber-400"></div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-xs font-mono text-gray-500 w-16">16 (4rem)</span>
+            <div class="h-4 w-16 rounded bg-amber-400"></div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-xs font-mono text-gray-500 w-16">24 (6rem)</span>
+            <div class="h-4 w-24 rounded bg-amber-400"></div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-xs font-mono text-gray-500 w-16">32 (8rem)</span>
+            <div class="h-4 w-32 rounded bg-amber-400"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Timeline Element -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Timeline</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Timeline component pattern used in Experience/Education.</p>
+        <div class="relative pl-6 border-l-2 border-gray-200 dark:border-gray-700">
+          <div
+            class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-yellow-500 dark:bg-yellow-400"
+          ></div>
+          <div class="mb-2">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Timeline Item Title</h3>
+            <p class="text-gray-600 dark:text-gray-400">Subtitle or company name</p>
+            <p class="text-sm text-gray-500">Date range</p>
+          </div>
+          <ul class="space-y-1">
+            <li class="text-gray-600 dark:text-gray-400 text-sm flex items-start gap-2">
+              <span
+                class="mt-2 w-1 h-1 rounded-full flex-shrink-0 bg-yellow-500 dark:bg-yellow-400"
+              ></span>
+              First bullet point item
+            </li>
+            <li class="text-gray-600 dark:text-gray-400 text-sm flex items-start gap-2">
+              <span
+                class="mt-2 w-1 h-1 rounded-full flex-shrink-0 bg-yellow-500 dark:bg-yellow-400"
+              ></span>
+              Second bullet point item
+            </li>
+          </ul>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</BaseLayout>

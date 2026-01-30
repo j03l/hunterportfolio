@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/* Dark mode accent color - yellow palette */
+:root {
+  --accent-light: #eab308; /* yellow-500 */
+  --accent-dark: #facc15;  /* yellow-400 - brighter for dark backgrounds */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
 body {
   font-family: 'IBM Plex Mono', monospace;
 }

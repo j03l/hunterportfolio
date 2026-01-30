@@ -1,10 +1,5 @@
 ---
 import Header from "../components/Header.astro";
-import Hero from "../components/Hero.astro";
-import About from "../components/About.astro";
-import Projects from "../components/Projects.astro";
-import Experience from "../components/Experience.astro";
-import Education from "../components/Education.astro";
 import Footer from "../components/Footer.astro";
 import { ClientRouter } from "astro:transitions";
 import { SEO } from "astro-seo";
@@ -12,9 +7,25 @@ import { Schema } from "astro-seo-schema";
 import { siteConfig } from "../config";
 import "../styles/global.css";
 
-const pageTitle = `${siteConfig.name} - ${siteConfig.title}`;
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  article?: {
+    publishedTime?: string;
+    modifiedTime?: string;
+    authors?: string[];
+    tags?: string[];
+  };
+  noindex?: boolean;
+}
+
+const { title, description, image, article, noindex = false } = Astro.props;
+const pageTitle = title ? `${title} - ${siteConfig.name}` : `${siteConfig.name} - ${siteConfig.title}`;
+const pageDescription = description || siteConfig.description;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const ogImageURL = new URL("/og-default.png", Astro.site).toString();
+const ogImage = image || "/og-default.png";
+const ogImageURL = new URL(ogImage, Astro.site).toString();
 ---
 
 <html lang="en">
@@ -27,30 +38,38 @@ const ogImageURL = new URL("/og-default.png", Astro.site).toString();
     <!-- SEO Meta Tags -->
     <SEO
       title={pageTitle}
-      description={siteConfig.description}
+      description={pageDescription}
       canonical={canonicalURL.toString()}
+      noindex={noindex}
+      nofollow={noindex}
       openGraph={{
         basic: {
           title: pageTitle,
-          type: "website",
+          type: article ? "article" : "website",
           image: ogImageURL,
           url: canonicalURL.toString(),
         },
         optional: {
-          description: siteConfig.description,
+          description: pageDescription,
           siteName: siteConfig.name,
           locale: "en_US",
         },
         image: {
           alt: pageTitle,
         },
+        article: article ? {
+          publishedTime: article.publishedTime,
+          modifiedTime: article.modifiedTime,
+          authors: article.authors,
+          tags: article.tags,
+        } : undefined,
       }}
       twitter={{
         card: "summary_large_image",
         site: siteConfig.social.twitter ? `@${siteConfig.social.twitter.split('/').pop()}` : undefined,
         creator: siteConfig.social.twitter ? `@${siteConfig.social.twitter.split('/').pop()}` : undefined,
         title: pageTitle,
-        description: siteConfig.description,
+        description: pageDescription,
         image: ogImageURL,
       }}
       extend={{
@@ -104,34 +123,15 @@ const ogImageURL = new URL("/og-default.png", Astro.site).toString();
       }}
     />
 
-    <!-- Structured Data: ProfilePage -->
-    <Schema
-      item={{
-        "@context": "https://schema.org",
-        "@type": "ProfilePage",
-        mainEntity: {
-          "@type": "Person",
-          name: siteConfig.name,
-          jobTitle: siteConfig.title,
-          description: siteConfig.aboutMe,
-          knowsAbout: siteConfig.skills,
-          url: Astro.site?.toString(),
-        },
-      }}
-    />
-
     <!-- View Transitions -->
     <ClientRouter />
+
+    <!-- Additional head content from child layouts -->
+    <slot name="head" />
   </head>
-  <body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+  <body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300" style={`--accent: ${siteConfig.accentColor}; --accent-dark: ${siteConfig.accentColorDark}`}>
     <Header />
-    <section>
-      <Hero />
-      <About />
-      <Projects />
-      <Experience />
-      <Education />
-    </section>
+    <slot />
     <Footer />
   </body>
 </html>

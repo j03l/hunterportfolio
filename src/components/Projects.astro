@@ -1,6 +1,39 @@
 ---
+import { getCollection } from "astro:content";
 import { siteConfig } from "../config";
-const hasProjects = siteConfig.projects && siteConfig.projects.length > 0;
+
+// Get projects from content collection
+const contentProjects = await getCollection("projects", ({ data }) => {
+  return data.draft !== true;
+});
+
+// Sort by date (newest first), then by featured status
+const sortedContentProjects = contentProjects.sort((a, b) => {
+  if (a.data.featured !== b.data.featured) {
+    return a.data.featured ? -1 : 1;
+  }
+  return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+});
+
+// Transform content projects to a unified format
+const projectsFromContent = sortedContentProjects.map((project) => ({
+  name: project.data.title,
+  description: project.data.description,
+  link: `/projects/${project.slug}`,
+  skills: project.data.technologies,
+  isInternal: true,
+  heroImage: project.data.heroImage,
+}));
+
+// Get external-only projects from config (if any remain after content migration)
+const externalProjects = (siteConfig.projects || []).map((project) => ({
+  ...project,
+  isInternal: false,
+}));
+
+// Combine: content projects first, then any external-only projects
+const allProjects = [...projectsFromContent, ...externalProjects];
+const hasProjects = allProjects.length > 0;
 ---
 
 {
@@ -8,71 +41,106 @@ const hasProjects = siteConfig.projects && siteConfig.projects.length > 0;
     <section id="projects" class="p-8 sm:p-12 md:p-16 lg:p-24">
       <div>
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
-          <div class="lg:col-span-4">
-            <h2 class="text-3xl sm:text-4xl md:text-5xl xl:text-7xl font-bold text-gray-900">
+          <div class="lg:col-span-4 lg:sticky lg:top-24">
+            <h2 class="text-3xl sm:text-4xl md:text-5xl xl:text-7xl font-bold text-gray-900 dark:text-gray-100">
               Projects
             </h2>
             <div
-              class="w-[75px] h-[5px] mt-2 rounded-full"
-              style={`background-color: ${siteConfig.accentColor}`}
+              class="w-[75px] h-[5px] mt-2 rounded-full bg-yellow-500 dark:bg-yellow-400"
             />
           </div>
 
           <div class="lg:col-span-8">
             <div class="space-y-8">
-              {siteConfig.projects.map((project, index) => {
-                const Component = project.link ? "a" : "div";
-                const linkProps = project.link
-                  ? {
-                      href: project.link,
-                      target: "_blank",
-                      rel: "noopener noreferrer",
-                    }
+              {allProjects.map((project, index) => {
+                const hasLink = !!project.link;
+                const isExternal = !project.isInternal;
+                const Component = hasLink ? "a" : "div";
+                const linkProps = hasLink
+                  ? isExternal
+                    ? {
+                        href: project.link,
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                      }
+                    : {
+                        href: project.link,
+                      }
                   : {};
 
                 return (
                   <div class="group relative">
                     <Component
                       {...linkProps}
-                      class={`block relative p-4 sm:p-6 md:p-8 bg-gray-50 rounded-xl sm:rounded-2xl border border-gray-200 transition-all duration-300 ${
-                        project.link
-                          ? "hover:bg-white hover:shadow-xl hover:border-gray-300 hover:-translate-y-1"
+                      class={`block relative p-4 sm:p-6 md:p-8 bg-gray-50 dark:bg-gray-900 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-800 transition-all duration-300 ${
+                        hasLink
+                          ? "hover:bg-white dark:hover:bg-gray-800 hover:shadow-xl hover:border-gray-300 dark:hover:border-gray-700 hover:-translate-y-1 cursor-pointer"
                           : ""
                       }`}
                     >
-                      {project.link && (
-                        <div class="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 flex items-center justify-center bg-gray-900 rounded-full text-white transition-all duration-300 group-hover:bg-gray-700">
-                          <svg
-                            class="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M7 17L17 7M17 7H7M17 7V17"
-                            />
-                          </svg>
+                      {hasLink && (
+                        <div
+                          class="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 flex items-center justify-center rounded-full text-white dark:text-gray-900 transition-all duration-300 group-hover:opacity-90 bg-yellow-500 dark:bg-yellow-400"
+                        >
+                          {isExternal ? (
+                            <div class="relative w-full h-full flex items-center justify-center">
+                              {/* Globe icon - appears after arrow exits */}
+                              <svg
+                                class="absolute inset-0 m-auto w-5 h-5 sm:w-6 sm:h-6 globe-icon"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle cx="12" cy="12" r="10" stroke-width="1.5" />
+                                <path stroke-width="1.5" d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                              </svg>
+                              {/* Arrow pointer - stays visible pointing to globe */}
+                              <svg
+                                class="absolute w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 arrow-icon-external"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2.5"
+                                  d="M7 17L17 7M17 7H7M17 7V17"
+                                />
+                              </svg>
+                            </div>
+                          ) : (
+                            <svg
+                              class="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 arrow-icon-internal"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M13 7l5 5m0 0l-5 5m5-5H6"
+                              />
+                            </svg>
+                          )}
                         </div>
                       )}
 
                       <div class="space-y-4">
                         <div>
                           <span
-                            class="text-sm font-mono"
-                            style={{ color: siteConfig.accentColor }}
+                            class="text-sm font-mono text-yellow-500 dark:text-yellow-400"
                           >
                             0{index + 1}
                           </span>
-                          <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mt-1">
+                          <h3 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
                             {project.name}
                           </h3>
                         </div>
 
                         <p
-                          class={`text-base sm:text-lg text-gray-600 leading-relaxed ${project.link ? "pr-12 sm:pr-14 md:pr-16" : ""}`}
+                          class={`text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed ${hasLink ? "pr-12 sm:pr-14 md:pr-16" : ""}`}
                         >
                           {project.description}
                         </p>
@@ -81,13 +149,23 @@ const hasProjects = siteConfig.projects && siteConfig.projects.length > 0;
                           <div class="flex flex-wrap gap-1.5 sm:gap-2 pt-2">
                             {project.skills.map((skill) => (
                               <span
-                                class={`px-2.5 sm:px-3 py-1 sm:py-1.5 bg-gray-900 text-white rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 ${
-                                  project.link ? "group-hover:bg-gray-800" : ""
+                                class={`px-2.5 sm:px-3 py-1 sm:py-1.5 bg-gray-900 dark:bg-gray-700 text-white rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 ${
+                                  hasLink ? "group-hover:bg-gray-800 dark:group-hover:bg-gray-600" : ""
                                 }`}
                               >
                                 {skill}
                               </span>
                             ))}
+                          </div>
+                        )}
+
+                        {!isExternal && hasLink && (
+                          <div class="pt-2">
+                            <span
+                              class="text-sm font-medium text-yellow-500 dark:text-yellow-400"
+                            >
+                              View Case Study →
+                            </span>
                           </div>
                         )}
                       </div>
@@ -102,3 +180,79 @@ const hasProjects = siteConfig.projects && siteConfig.projects.length > 0;
     </section>
   )
 }
+
+<style>
+  .arrow-icon-internal,
+  .arrow-icon-external {
+    transition: transform 0.3s ease;
+  }
+
+  .group:hover .arrow-icon-internal {
+    animation:
+      spin-and-push-right 1s ease-out forwards,
+      pulse-right 2s ease-in-out 1s infinite;
+  }
+
+  .group:hover .arrow-icon-external {
+    animation: arrow-external-sequence 0.6s ease-out forwards;
+  }
+
+  .globe-icon {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  .group:hover .globe-icon {
+    animation: globe-appear 0.6s ease-out forwards, globe-pulse 2s ease-in-out 0.6s infinite;
+  }
+
+  @keyframes spin-and-push-right {
+    0% { transform: rotate(0deg); }
+    70% { transform: rotate(360deg); }
+    100% { transform: rotate(360deg) translateX(4px); }
+  }
+
+  /* Arrow: move out of button and fade away */
+  @keyframes arrow-external-sequence {
+    0% {
+      transform: translate(0, 0);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(15px, -15px);
+      opacity: 0;
+    }
+  }
+
+  /* Globe: appear and grow as arrow moves aside */
+  @keyframes globe-appear {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    70% {
+      opacity: 1;
+      transform: scale(1.15);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Globe: pulse scale infinitely */
+  @keyframes globe-pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.25);
+    }
+  }
+
+  @keyframes pulse-right {
+    0%, 45% { transform: rotate(360deg) translateX(4px); }
+    50%, 95% { transform: rotate(360deg) translateX(0); }
+    100% { transform: rotate(360deg) translateX(4px); }
+  }
+</style>

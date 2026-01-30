@@ -1,37 +1,26 @@
 export const siteConfig = {
-  name: "Ryan Fitzgerald",
-  title: "Senior Software Engineer",
-  description: "Portfolio website of Ryan Fitzgerald",
-  accentColor: "#1d4ed8",
+  name: "Hunter Hardy",
+  title: "Software Engineer",
+  description: "Portfolio website of Hunter Hardy",
+  accentColor: "#eab308",      // yellow-500 for light mode
+  accentColorDark: "#facc15",  // yellow-400 for dark mode (brighter)
   social: {
-    email: "your-email@example.com",
+    email: "thehunterhardy@icloud.com",
     linkedin: "https://linkedin.com/in/yourprofile",
     twitter: "https://x.com/rfitzio",
-    github: "https://github.com/RyanFitzgerald",
+    github: "https://github.com/j03l",
   },
   aboutMe:
     "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem quos asperiores nihil consequatur tempore cupiditate architecto natus commodi corrupti quas quasi facere est, dignissimos odit nam veniam sapiente ut, vitae eligendi ipsum dolor, nostrum ullam impedit! Corrupti ratione mollitia temporibus necessitatibus, consectetur reiciendis recusandae id, dolorum quaerat, vero pariatur. Ratione!",
   skills: ["Javascript", "React", "Node.js", "Python", "AWS", "Docker"],
+  // Projects with case studies are in src/content/projects/
+  // Add external-only projects here (no internal case study page)
   projects: [
     {
       name: "AI Dev Roundup Newsletter",
       description:
         "One concise email. Five minutes. Every Tuesday. Essential AI news & trends, production-ready libraries, powerful AI tools, and real-world code examples",
       link: "https://aidevroundup.com/?ref=devportfolio",
-      skills: ["React", "Node.js", "AWS"],
-    },
-    {
-      name: "Chrome Extension Mastery: Build Full-Stack Extensions with React & Node.js",
-      description:
-        "Master the art of building production-ready, full-stack Chrome Extensions using modern web technologies and best practices",
-      link: "https://fullstackextensions.com/?ref=devportfolio",
-      skills: ["React", "Node.js", "AWS"],
-    },
-    {
-      name: "ExtensionKit",
-      description:
-        "Kit to jump-start your Chrome extension projects with a variety of battle-tested starter templates & examples",
-      link: "https://extensionkit.io/?ref=devportfolio",
       skills: ["React", "Node.js", "AWS"],
     },
   ],
@@ -89,4 +78,20 @@ export const siteConfig = {
       ],
     },
   ],
+  cv: {
+    summary:
+      "Experienced software engineer with 6+ years of expertise in building scalable web applications. Passionate about clean code, modern technologies, and delivering exceptional user experiences.",
+    certifications: [
+      {
+        name: "AWS Certified Solutions Architect",
+        issuer: "Amazon Web Services",
+        date: "2023",
+      },
+      {
+        name: "Professional Scrum Master I",
+        issuer: "Scrum.org",
+        date: "2022",
+      },
+    ],
+  },
 };

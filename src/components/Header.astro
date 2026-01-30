@@ -4,30 +4,42 @@ import { siteConfig } from "../config";
 const hasProjects = siteConfig.projects && siteConfig.projects.length > 0;
 const hasExperience = siteConfig.experience && siteConfig.experience.length > 0;
 const hasEducation = siteConfig.education && siteConfig.education.length > 0;
+
+const currentPath = Astro.url.pathname;
+const isHomePage = currentPath === "/" || currentPath === "";
+const homePrefix = isHomePage ? "" : "/";
+
+// Determine which nav item should be active based on current path
+const isBlogPage = currentPath.startsWith("/blog");
+const isCVPage = currentPath === "/cv" || currentPath === "/cv/";
 ---
 
 <header
   id="header"
   class="fixed top-0 left-0 right-0 z-50 hidden md:block transition-all duration-300"
+  data-light-bg="bg-white/80"
+  data-dark-bg="dark:bg-gray-950/80"
 >
   <nav class="max-w-7xl mx-auto px-8 py-4">
     <ul class="flex items-center gap-8 justify-center">
       <li>
         <a
-          href="#about"
-          class="text-gray-700 hover:text-black transition-colors font-medium"
+          href={`${homePrefix}#about`}
+          class="nav-link relative text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors font-medium"
         >
           About
+          <span class="nav-indicator"></span>
         </a>
       </li>
       {
         hasProjects && (
           <li>
             <a
-              href="#projects"
-              class="text-gray-700 hover:text-black transition-colors font-medium"
+              href={`${homePrefix}#projects`}
+              class="nav-link relative text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors font-medium"
             >
               Projects
+              <span class="nav-indicator"></span>
             </a>
           </li>
         )
@@ -36,10 +48,11 @@ const hasEducation = siteConfig.education && siteConfig.education.length > 0;
         hasExperience && (
           <li>
             <a
-              href="#experience"
-              class="text-gray-700 hover:text-black transition-colors font-medium"
+              href={`${homePrefix}#experience`}
+              class="nav-link relative text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors font-medium"
             >
               Experience
+              <span class="nav-indicator"></span>
             </a>
           </li>
         )
@@ -48,25 +61,105 @@ const hasEducation = siteConfig.education && siteConfig.education.length > 0;
         hasEducation && (
           <li>
             <a
-              href="#education"
-              class="text-gray-700 hover:text-black transition-colors font-medium"
+              href={`${homePrefix}#education`}
+              class="nav-link relative text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors font-medium"
             >
               Education
+              <span class="nav-indicator"></span>
             </a>
           </li>
         )
       }
+      <li>
+        <a
+          href="/blog"
+          class:list={["nav-link relative text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors font-medium", { "is-active": isBlogPage }]}
+        >
+          Blog
+          <span class="nav-indicator"></span>
+        </a>
+      </li>
+      <li>
+        <a
+          href="/cv"
+          class:list={["nav-link relative text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors font-medium", { "is-active": isCVPage }]}
+        >
+          CV
+          <span class="nav-indicator"></span>
+        </a>
+      </li>
     </ul>
   </nav>
 </header>
 
 <script>
-  window.addEventListener("scroll", () => {
+  const hashToSection: Record<string, string> = {
+    "#about": "About",
+    "#projects": "Projects",
+    "#experience": "Experience",
+    "#education": "Education"
+  };
+  const homeSections = Object.values(hashToSection);
+
+  function updateHeader() {
     const header = document.getElementById("header");
     if (window.scrollY > 100) {
-      header?.classList.add("bg-white/80", "backdrop-blur-sm");
+      header?.classList.add("bg-white/80", "dark:bg-gray-950/80", "backdrop-blur-sm");
     } else {
-      header?.classList.remove("bg-white/80", "backdrop-blur-sm");
+      header?.classList.remove("bg-white/80", "dark:bg-gray-950/80", "backdrop-blur-sm");
+    }
+  }
+
+  function updateActiveNav() {
+    const navLinks = document.querySelectorAll(".nav-link");
+    const pathname = window.location.pathname;
+    const hash = window.location.hash;
+    const isHomePage = pathname === "/" || pathname === "";
+
+    navLinks.forEach((link) => {
+      const linkText = link.textContent?.trim();
+      if (!linkText) return;
+
+      let shouldBeActive = false;
+
+      if (linkText === "Blog" && pathname.startsWith("/blog")) {
+        shouldBeActive = true;
+      } else if (linkText === "CV" && (pathname === "/cv" || pathname === "/cv/")) {
+        shouldBeActive = true;
+      } else if (isHomePage && homeSections.includes(linkText)) {
+        const section = hashToSection[hash];
+        shouldBeActive = linkText === section;
+      }
+
+      link.classList.toggle("is-active", shouldBeActive);
+    });
+  }
+
+  // Initial setup
+  window.addEventListener("scroll", updateHeader);
+  updateActiveNav();
+
+  // Handle Astro view transitions
+  document.addEventListener("astro:page-load", updateActiveNav);
+  document.addEventListener("astro:after-swap", updateActiveNav);
+
+  // Handle hash changes on same page
+  window.addEventListener("hashchange", updateActiveNav);
+
+  // Handle clicks for immediate feedback
+  document.addEventListener("click", (e) => {
+    const link = (e.target as HTMLElement).closest(".nav-link");
+    if (link) {
+      const linkText = link.textContent?.trim();
+      if (linkText && homeSections.includes(linkText)) {
+        document.querySelectorAll(".nav-link").forEach((l) => {
+          const lText = l.textContent?.trim();
+          if (lText && homeSections.includes(lText)) {
+            l.classList.remove("is-active");
+          }
+        });
+        link.classList.add("is-active");
+      }
     }
   });
 </script>
@@ -74,5 +167,35 @@ const hasEducation = siteConfig.education && siteConfig.education.length > 0;
 <style>
   html {
     scroll-behavior: smooth;
+  }
+
+  .nav-link {
+    display: inline-block;
+    padding-bottom: 4px;
+  }
+
+  .nav-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #eab308;
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .nav-indicator {
+      background-color: #facc15;
+    }
+  }
+
+  .nav-link.is-active .nav-indicator {
+    transform: scaleX(1);
+  }
+
+  .nav-link:hover .nav-indicator {
+    transform: scaleX(1);
   }
 </style>
