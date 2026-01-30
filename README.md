@@ -8,8 +8,8 @@ This was completely rebuilt from the ground up from V1. This template was built 
 
 This template also comes with `CLAUDE.md` and `.cursor/rules` files for easy integration with your existing AI workflows.
 
-> **📬 Connect & Share!**  
-> For questions and updates, feel free to reach out on [**X (Twitter)**](https://x.com/rfitzio).  
+> **📬 Connect & Share!**
+> For questions and updates, feel free to reach out on [**X (Twitter)**](https://x.com/rfitzio).
 > If you've built and published your personal site with this template, I'd love to see it! Send me a DM 🚀
 
 ## Preview
@@ -45,6 +45,7 @@ If skills, projects, experience, or education are removed from the config, those
 Here's what the config data structure looks like for each section:
 
 #### Basic Information
+
 ```typescript
 name: "Your Name",
 title: "Your Job Title",
@@ -53,26 +54,30 @@ accentColor: "#1d4ed8", // Hex color for theme
 ```
 
 #### Social Links (all optional)
+
 ```typescript
 social: {
   email: "your-email@example.com",
   linkedin: "https://linkedin.com/in/yourprofile",
-  twitter: "https://twitter.com/yourprofile", 
+  twitter: "https://twitter.com/yourprofile",
   github: "https://github.com/yourusername",
 }
 ```
 
 #### About Section
+
 ```typescript
 aboutMe: "A paragraph describing yourself, your background, interests, and what you're passionate about. This appears in the About section of your portfolio."
 ```
 
 #### Skills
+
 ```typescript
 skills: ["JavaScript", "React", "Node.js", "Python", "AWS", "Docker"]
 ```
 
 #### Projects
+
 ```typescript
 projects: [
   {
@@ -85,6 +90,7 @@ projects: [
 ```
 
 #### Experience
+
 ```typescript
 experience: [
   {
@@ -101,6 +107,7 @@ experience: [
 ```
 
 #### Education
+
 ```typescript
 education: [
   {
