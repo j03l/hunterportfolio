@@ -3,6 +3,7 @@ title: "Why I Started Building in Public (And You Should Too)"
 description: "Lessons learned from sharing my development journey openly, including the unexpected benefits and how to get started."
 pubDate: 2024-01-28
 tags: ["career", "indie hacking", "personal growth"]
+readTime: "5 min read"
 draft: false
 ---
 

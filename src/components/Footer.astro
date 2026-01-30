@@ -11,7 +11,7 @@ const homePrefix = isHomePage ? "" : "/";
 ---
 
 <footer class="relative bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">
-  <div class="mx-auto max-w-6xl px-6 py-12 lg:px-8">
+  <div class="mx-auto max-w-6xl px-6 py-12 pb-24 md:pb-12 lg:px-8">
     <div
       class="flex flex-col md:flex-row md:items-center md:justify-between gap-8"
     >
@@ -129,14 +129,14 @@ const homePrefix = isHomePage ? "" : "/";
         <nav class="flex gap-x-8">
           <a
             href={`${homePrefix}#about`}
-            class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+            class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors py-2 inline-block"
             >About</a
           >
           {
             hasProjects && (
               <a
                 href={`${homePrefix}#projects`}
-                class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors py-2 inline-block"
               >
                 Projects
               </a>
@@ -146,7 +146,7 @@ const homePrefix = isHomePage ? "" : "/";
             hasExperience && (
               <a
                 href={`${homePrefix}#experience`}
-                class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors py-2 inline-block"
               >
                 Experience
               </a>
@@ -156,7 +156,7 @@ const homePrefix = isHomePage ? "" : "/";
             hasEducation && (
               <a
                 href={`${homePrefix}#education`}
-                class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors py-2 inline-block"
               >
                 Education
               </a>
@@ -164,22 +164,22 @@ const homePrefix = isHomePage ? "" : "/";
           }
           <a
             href="/blog"
-            class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+            class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors py-2 inline-block"
           >
             Blog
           </a>
           <a
             href="/cv"
-            class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+            class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors py-2 inline-block"
           >
             CV
           </a>
         </nav>
-        <p class="text-sm text-gray-500 dark:text-gray-500">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
           © {new Date().getFullYear()}
           {siteConfig.name}. All rights reserved.
           <span class="mx-2">·</span>
-          <a href="/style" class="hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Style</a>
+          <a href="/style" class="hover:text-gray-700 dark:hover:text-gray-300 transition-colors py-1 inline-block">Style</a>
         </p>
       </div>
     </div>

@@ -3,6 +3,7 @@ title: "10 React Performance Tips I Learned the Hard Way"
 description: "Practical performance optimization techniques for React applications, from avoiding unnecessary re-renders to code splitting strategies."
 pubDate: 2024-02-20
 tags: ["react", "performance", "javascript"]
+readTime: "8 min read"
 draft: false
 ---
 
@@ -22,6 +23,7 @@ The React DevTools Profiler is your best friend. Before making any optimizations
 ## 2. Understand When Components Re-render
 
 A component re-renders when:
+
 - Its state changes
 - Its props change
 - Its parent re-renders

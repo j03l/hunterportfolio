@@ -3,10 +3,26 @@ title: "TypeScript Patterns That Changed How I Code"
 description: "Advanced TypeScript patterns including discriminated unions, branded types, and the builder pattern that make your code safer and more expressive."
 pubDate: 2024-03-05
 tags: ["typescript", "patterns", "javascript"]
+readTime: "6 min read"
 draft: false
+resources:
+  - title: "TypeScript Handbook - Narrowing"
+    url: "https://www.typescriptlang.org/docs/handbook/2/narrowing.html"
+  - title: "TypeScript Deep Dive - Discriminated Unions"
+    url: "https://basarat.gitbook.io/typescript/type-system/discriminated-unions"
+  - title: "Branded Types in TypeScript"
+    url: "https://egghead.io/blog/using-branded-types-in-typescript"
+  - title: "Matt Pocock's Total TypeScript"
+    url: "https://www.totaltypescript.com/"
 ---
 
+import Callout from '../../components/Callout.astro';
+
 TypeScript is more than just "JavaScript with types." Once you learn these patterns, you'll wonder how you ever coded without them.
+
+<Callout type="info" title="TypeScript 4.7+ recommended">
+These patterns work best with `strict` mode enabled in your `tsconfig.json`.
+</Callout>
 
 ## Discriminated Unions for State Management
 
@@ -41,6 +57,10 @@ function handleResponse(response: ApiResponse) {
 }
 ```
 
+<Callout type="success" title="Automatic type narrowing">
+The `status` field acts as a "discriminant" that TypeScript uses to narrow the type automatically. This eliminates entire categories of null-check bugs.
+</Callout>
+
 ## Branded Types for Type Safety
 
 Prevent mixing up similar primitive types:
@@ -64,6 +84,10 @@ const postId = createPostId('post-456');
 getUser(userId); // ✅ Works
 getUser(postId); // ❌ Type error!
 ```
+
+<Callout type="warning" title="Compile-time only">
+Branded types are a compile-time only feature. At runtime, `UserId` and `PostId` are both just strings. Don't rely on them for runtime validation.
+</Callout>
 
 ## The Builder Pattern with Method Chaining
 

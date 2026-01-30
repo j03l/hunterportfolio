@@ -3,6 +3,7 @@ title: "Getting Started with Web Development"
 description: "A beginner's guide to starting your journey in web development, covering the essential technologies and best practices."
 pubDate: 2024-01-15
 tags: ["web development", "javascript", "beginners"]
+readTime: "4 min read"
 draft: false
 ---
 

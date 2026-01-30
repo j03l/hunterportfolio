@@ -1,0 +1,99 @@
+---
+import { getCollection } from "astro:content";
+
+interface Props {
+  currentSlug: string;
+  currentTags: string[];
+}
+
+const { currentSlug, currentTags } = Astro.props;
+
+// Fetch all non-draft blog posts
+const allPosts = await getCollection("blog", ({ data }) => data.draft !== true);
+
+// Calculate tag similarity score for each post
+const postsWithScores = allPosts
+  .filter((post) => post.slug !== currentSlug)
+  .map((post) => {
+    const postTags = post.data.tags || [];
+    const matchingTags = postTags.filter((tag) => currentTags.includes(tag));
+    return {
+      post,
+      score: matchingTags.length,
+    };
+  })
+  .filter((item) => item.score > 0) // Only show posts with at least one matching tag
+  .sort((a, b) => {
+    // Sort by score descending, then by date descending
+    if (b.score !== a.score) return b.score - a.score;
+    return b.post.data.pubDate.getTime() - a.post.data.pubDate.getTime();
+  })
+  .slice(0, 3); // Show up to 3 related posts
+
+const hasRelatedPosts = postsWithScores.length > 0;
+---
+
+{hasRelatedPosts && (
+  <section class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
+    <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+      Related Posts
+    </h2>
+    <div class="grid gap-4">
+      {postsWithScores.map(({ post }) => {
+        const formattedDate = post.data.pubDate.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+        const postTags = post.data.tags || [];
+
+        return (
+          <a
+            href={`/blog/${post.slug}`}
+            class="block relative bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-100 dark:border-gray-800 p-4 sm:p-5 hover:border-yellow-500/50 dark:hover:border-yellow-400/50 transition-all duration-300 group overflow-hidden"
+          >
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+              <div class="flex-1 min-w-0 overflow-hidden">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100 group-hover:text-yellow-500 dark:group-hover:text-yellow-400 transition-colors line-clamp-2 sm:truncate">
+                  {post.data.title}
+                </h3>
+                <div class="flex items-center gap-2 mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  <time>{formattedDate}</time>
+                  {post.data.readTime && (
+                    <>
+                      <span>·</span>
+                      <span>{post.data.readTime}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-1.5 sm:flex-shrink-0">
+                {postTags.slice(0, 2).map((tag) => (
+                  <span
+                    class:list={[
+                      "px-2 py-0.5 rounded-full text-xs font-medium",
+                      currentTags.includes(tag)
+                        ? "bg-yellow-500/20 text-yellow-600 dark:bg-yellow-400/20 dark:text-yellow-400"
+                        : "bg-gray-200/50 text-gray-500 dark:bg-gray-700/50 dark:text-gray-400"
+                    ]}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+)}
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

@@ -2,6 +2,12 @@
 import BaseLayout from "./BaseLayout.astro";
 import { Schema } from "astro-seo-schema";
 import { siteConfig } from "../config";
+import RelatedPosts from "../components/RelatedPosts.astro";
+
+interface Resource {
+  title: string;
+  url: string;
+}
 
 interface Props {
   title: string;
@@ -9,9 +15,12 @@ interface Props {
   pubDate: Date;
   heroImage?: string;
   tags?: string[];
+  readTime?: string;
+  slug: string;
+  resources?: Resource[];
 }
 
-const { title, description, pubDate, heroImage, tags = [] } = Astro.props;
+const { title, description, pubDate, heroImage, tags = [], readTime, slug, resources = [] } = Astro.props;
 
 const formattedDate = pubDate.toLocaleDateString("en-US", {
   year: "numeric",
@@ -89,8 +98,14 @@ const imageURL = heroImage ? new URL(heroImage, Astro.site).toString() : undefin
       ],
     }}
   />
+
+  <!-- Reading Progress Indicator -->
+  <div class="reading-progress-container">
+    <div class="reading-progress-bar" id="reading-progress"></div>
+  </div>
+
   <main class="min-h-screen bg-white dark:bg-gray-950">
-    <article class="max-w-3xl mx-auto px-6 py-16 sm:py-24">
+    <article class="blog-content py-16 sm:py-24">
       <header class="mb-12">
         <a
           href="/blog"
@@ -117,7 +132,15 @@ const imageURL = heroImage ? new URL(heroImage, Astro.site).toString() : undefin
         </div>
         <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">{title}</h1>
         <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-          <time datetime={pubDate.toISOString()}>{formattedDate}</time>
+          <div class="flex items-center gap-2">
+            <time datetime={pubDate.toISOString()}>{formattedDate}</time>
+            {readTime && (
+              <>
+                <span>·</span>
+                <span>{readTime}</span>
+              </>
+            )}
+          </div>
           {
             tags.length > 0 && (
               <div class="flex flex-wrap gap-2">
@@ -138,21 +161,173 @@ const imageURL = heroImage ? new URL(heroImage, Astro.site).toString() : undefin
           <img
             src={heroImage}
             alt=""
-            class="w-full rounded-lg mb-12 shadow-sm"
+            class="full w-full rounded-lg mb-12 shadow-sm"
           />
         )
       }
       <div class="prose prose-gray dark:prose-invert max-w-none">
         <slot />
       </div>
+
+      <!-- Resources Section -->
+      {resources.length > 0 && (
+        <section class="resources-section mt-12">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-500 dark:text-yellow-400">
+              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+            </svg>
+            Helpful Resources
+          </h2>
+          <ul class="space-y-2">
+            {resources.map((resource) => (
+              <li>
+                <a
+                  href={resource.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
+                  {resource.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <RelatedPosts currentSlug={slug} currentTags={tags} />
+
+      <!-- Back to Blog Footer -->
+      <div class="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800">
+        <a
+          href="/blog"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          View All Posts
+        </a>
+      </div>
     </article>
   </main>
 </BaseLayout>
 
+<script>
+  function initReadingProgress() {
+    const article = document.querySelector('article');
+    const progressBar = document.getElementById('reading-progress');
+    if (!article || !progressBar) return;
+
+    function onScroll() {
+      const top = article.offsetTop;
+      const end = top + article.offsetHeight - window.innerHeight;
+      const progress = Math.max(0, Math.min(100,
+        ((window.scrollY - top) / (end - top)) * 100
+      ));
+      progressBar.style.width = `${progress}%`;
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  initReadingProgress();
+  document.addEventListener('astro:page-load', initReadingProgress);
+</script>
+
 <style is:global>
+  /* Reading Progress Bar */
+  .reading-progress-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: transparent;
+    z-index: 100;
+  }
+
+  .reading-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #eab308, #facc15);
+    transition: width 0.1s ease-out;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .reading-progress-bar {
+      background: linear-gradient(90deg, #facc15, #fde047);
+    }
+  }
+
+  /* Named Grid Lines Layout */
+  .blog-content {
+    --gap: clamp(1rem, 6vw, 3rem);
+    --full: minmax(var(--gap), 1fr);
+    --content: min(65ch, 100% - var(--gap) * 2);
+    --popout: minmax(0, 2rem);
+    --feature: minmax(0, 5rem);
+
+    display: grid;
+    grid-template-columns:
+      [full-start] var(--full)
+      [feature-start] var(--feature)
+      [popout-start] var(--popout)
+      [content-start] var(--content) [content-end]
+      var(--popout) [popout-end]
+      var(--feature) [feature-end]
+      var(--full) [full-end];
+  }
+
+  .blog-content > * {
+    grid-column: content;
+  }
+
+  .blog-content > .popout {
+    grid-column: popout;
+  }
+
+  .blog-content > .feature {
+    grid-column: feature;
+  }
+
+  .blog-content > .full {
+    grid-column: full;
+  }
+
+  /* Prose Styles */
   .prose {
     line-height: 1.75;
   }
+
+  /* Code block breakout using negative margins */
+  .prose .expressive-code {
+    --popout-size: 2rem;
+    margin-left: calc(var(--popout-size) * -1);
+    margin-right: calc(var(--popout-size) * -1);
+    width: calc(100% + var(--popout-size) * 2);
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .prose .expressive-code {
+      --popout-size: 0rem;
+    }
+  }
+
+  /* Inline code styling (not in code blocks) */
+  .prose :not(pre) > code {
+    background-color: #f3f4f6;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+  }
+
   .prose h2 {
     font-size: 1.5rem;
     font-weight: 700;
@@ -175,25 +350,6 @@ const imageURL = heroImage ? new URL(heroImage, Astro.site).toString() : undefin
     color: #eab308;
     text-decoration: underline;
   }
-  .prose code {
-    background-color: #f3f4f6;
-    padding: 0.125rem 0.375rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
-  }
-  .prose pre {
-    background-color: #1f2937;
-    color: #f9fafb;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    overflow-x: auto;
-    margin-bottom: 1.25rem;
-  }
-  .prose pre code {
-    background-color: transparent;
-    padding: 0;
-    color: inherit;
-  }
   .prose ul {
     list-style-type: disc;
     padding-left: 1.5rem;
@@ -215,6 +371,134 @@ const imageURL = heroImage ? new URL(heroImage, Astro.site).toString() : undefin
     color: #6b7280;
     margin-bottom: 1.25rem;
   }
+  .prose hr {
+    border: 0;
+    height: 1px;
+    background: #d1d5db;
+    width: 40%;
+    position: relative;
+    margin: 2.5rem auto;
+    overflow: visible;
+  }
+  .prose hr::before {
+    content: "";
+    display: block;
+    width: 10px;
+    height: 10px;
+    background: #eab308;
+    border: 2px solid #eab308;
+    border-radius: 50%;
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    margin-left: -6px;
+    box-sizing: content-box;
+  }
+
+  /* Callout/Admonition Styles */
+  .prose .callout {
+    position: relative;
+    padding: 1.25rem 1.5rem 1.25rem 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    margin-top: 2rem;
+    border-left: 3px solid;
+  }
+
+  .prose .callout-icon {
+    position: absolute;
+    top: -12px;
+    left: -12px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .prose .callout-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .prose .callout-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .prose .callout p {
+    margin-bottom: 0.75rem;
+  }
+
+  .prose .callout p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Info Callout */
+  .prose .callout-info {
+    background-color: rgba(59, 130, 246, 0.08);
+    border-color: #3b82f6;
+  }
+  .prose .callout-info .callout-icon {
+    background-color: #3b82f6;
+    color: white;
+  }
+  .prose .callout-info .callout-title {
+    color: #1d4ed8;
+  }
+  .prose .callout-info p {
+    color: #4b5563;
+  }
+
+  /* Warning Callout */
+  .prose .callout-warning {
+    background-color: rgba(245, 158, 11, 0.08);
+    border-color: #f59e0b;
+  }
+  .prose .callout-warning .callout-icon {
+    background-color: #f59e0b;
+    color: white;
+  }
+  .prose .callout-warning .callout-title {
+    color: #b45309;
+  }
+  .prose .callout-warning p {
+    color: #4b5563;
+  }
+
+  /* Success Callout */
+  .prose .callout-success {
+    background-color: rgba(16, 185, 129, 0.08);
+    border-color: #10b981;
+  }
+  .prose .callout-success .callout-icon {
+    background-color: #10b981;
+    color: white;
+  }
+  .prose .callout-success .callout-title {
+    color: #047857;
+  }
+  .prose .callout-success p {
+    color: #4b5563;
+  }
+
+  /* Danger Callout */
+  .prose .callout-danger {
+    background-color: rgba(239, 68, 68, 0.08);
+    border-color: #ef4444;
+  }
+  .prose .callout-danger .callout-icon {
+    background-color: #ef4444;
+    color: white;
+  }
+  .prose .callout-danger .callout-title {
+    color: #b91c1c;
+  }
+  .prose .callout-danger p {
+    color: #4b5563;
+  }
 
   /* Dark mode prose styles */
   @media (prefers-color-scheme: dark) {
@@ -229,13 +513,77 @@ const imageURL = heroImage ? new URL(heroImage, Astro.site).toString() : undefin
     .prose a {
       color: #facc15;
     }
-    .prose code {
+    .prose :not(pre) > code {
       background-color: #374151;
       color: #f3f4f6;
     }
     .prose blockquote {
       border-left-color: #4b5563;
       color: #9ca3af;
+    }
+    .prose hr {
+      background: #4b5563;
+    }
+    .prose hr::before {
+      background: #facc15;
+      border-color: #facc15;
+    }
+
+    /* Dark mode callouts */
+    .prose .callout-info {
+      background-color: rgba(59, 130, 246, 0.12);
+      border-color: #60a5fa;
+    }
+    .prose .callout-info .callout-icon {
+      background-color: #3b82f6;
+    }
+    .prose .callout-info .callout-title {
+      color: #93c5fd;
+    }
+    .prose .callout-info p {
+      color: #9ca3af;
+    }
+
+    .prose .callout-warning {
+      background-color: rgba(245, 158, 11, 0.12);
+      border-color: #fbbf24;
+    }
+    .prose .callout-warning .callout-icon {
+      background-color: #f59e0b;
+    }
+    .prose .callout-warning .callout-title {
+      color: #fcd34d;
+    }
+    .prose .callout-warning p {
+      color: #9ca3af;
+    }
+
+    .prose .callout-success {
+      background-color: rgba(16, 185, 129, 0.12);
+      border-color: #34d399;
+    }
+    .prose .callout-success .callout-icon {
+      background-color: #10b981;
+    }
+    .prose .callout-success .callout-title {
+      color: #6ee7b7;
+    }
+    .prose .callout-success p {
+      color: #9ca3af;
+    }
+
+    .prose .callout-danger {
+      background-color: rgba(239, 68, 68, 0.12);
+      border-color: #f87171;
+    }
+    .prose .callout-danger .callout-icon {
+      background-color: #ef4444;
+    }
+    .prose .callout-danger .callout-title {
+      color: #fca5a5;
+    }
+    .prose .callout-danger p {
+      color: #fecaca;
     }
   }
 </style>

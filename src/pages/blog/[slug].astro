@@ -27,6 +27,9 @@ const { Content } = await post.render();
   pubDate={post.data.pubDate}
   heroImage={post.data.heroImage}
   tags={post.data.tags}
+  readTime={post.data.readTime}
+  slug={post.slug}
+  resources={post.data.resources}
 >
   <Content />
 </BlogPost>

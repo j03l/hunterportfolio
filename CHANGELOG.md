@@ -1,5 +1,46 @@
 # Changelog
 
+### 2.2.0 (2026-01-30)
+
+#### New Components
+- Added `ScrollToTop` component with animated scroll-triggered spinning arrow and smooth scroll to top functionality
+- Added `MobileNav` component with iOS-style bottom sheet navigation menu with backdrop blur effect
+- Added `RelatedPosts` component that displays related blog posts based on tag similarity
+- Added `Callout` component for styled admonitions/alerts (info, warning, success, danger types) in blog posts
+
+#### MDX Support and Code Highlighting
+- Added MDX support via `@astrojs/mdx` integration for interactive blog content
+- Integrated Astro Expressive Code for enhanced syntax highlighting with GitHub Dark theme
+- Converted `typescript-patterns.md` to `typescript-patterns.mdx` demonstrating MDX capabilities with Callout components
+- Added code block breakout styling for wider code blocks on larger screens
+
+#### Blog Enhancements
+- Added reading time display to blog posts and blog cards
+- Added reading progress indicator bar at top of blog posts
+- Added resources section for helpful links at end of blog posts
+- Added "Back to Blog" footer navigation in blog post layout
+- Updated blog content schema to include `readTime` and `resources` fields
+
+#### Layout and UX Improvements
+- Added named grid lines layout system for blog content with content/popout/feature/full width options
+- Optimized font loading with non-render-blocking strategy (preload + media print technique)
+- Added `viewport-fit=cover` for proper safe area handling on notched devices
+- Changed main page wrapper from `<section>` to semantic `<main>` element
+- Added background color to html element to prevent white flash on page load
+
+#### Styling Updates
+- Added styled horizontal rule (`<hr>`) with decorative yellow dot in blog prose
+- Added comprehensive callout/admonition styles with dark mode support
+- Improved inline code styling (excluding code blocks)
+- Added `overflow-hidden` to BlogCard, Projects card for proper clipping
+- Added extra bottom padding to footer for mobile navigation clearance
+- Improved text color consistency on CV page date ranges
+- Added larger tap targets for footer navigation links
+
+#### Configuration
+- Updated Cloudflare adapter with `imageService: "compile"` option
+- Added Vite server allowed hosts configuration
+
 ### 2.1.0 (2026-01-30)
 
 #### Dark Mode Support

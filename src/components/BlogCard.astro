@@ -7,9 +7,10 @@ interface Props {
   pubDate: Date;
   slug: string;
   tags?: string[];
+  readTime?: string;
 }
 
-const { title, description, pubDate, slug, tags = [] } = Astro.props;
+const { title, description, pubDate, slug, tags = [], readTime } = Astro.props;
 
 const formattedDate = pubDate.toLocaleDateString("en-US", {
   year: "numeric",
@@ -20,7 +21,7 @@ const formattedDate = pubDate.toLocaleDateString("en-US", {
 
 <a
   href={`/blog/${slug}`}
-  class="block relative bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800 p-4 sm:p-5 md:p-6 hover:shadow-md transition-all duration-300 group hover:-translate-y-1 cursor-pointer"
+  class="block relative bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800 p-4 sm:p-5 md:p-6 hover:shadow-md transition-all duration-300 group hover:-translate-y-1 cursor-pointer overflow-hidden"
 >
   <div
     class="absolute top-4 right-4 sm:top-5 sm:right-5 md:top-6 md:right-6 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-white dark:text-gray-900 bg-yellow-500 dark:bg-yellow-400 transition-all duration-300 group-hover:opacity-90"
@@ -40,7 +41,15 @@ const formattedDate = pubDate.toLocaleDateString("en-US", {
     </svg>
   </div>
   <article class="pr-12 sm:pr-14">
-    <time class="text-sm text-gray-500 dark:text-gray-400">{formattedDate}</time>
+    <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+      <time>{formattedDate}</time>
+      {readTime && (
+        <>
+          <span>·</span>
+          <span>{readTime}</span>
+        </>
+      )}
+    </div>
     <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mt-2 mb-2 group-hover:text-yellow-500 dark:group-hover:text-yellow-400 transition-colors">
       {title}
     </h3>
