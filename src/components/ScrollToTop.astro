@@ -22,53 +22,70 @@
 <script>
   function initScrollToTop() {
     const scrollBtn = document.getElementById('scroll-to-top');
-    const arrow = scrollBtn?.querySelector('.scroll-top-arrow');
-    if (!scrollBtn) return;
+    const arrow = scrollBtn?.querySelector('.scroll-top-arrow') as HTMLElement | null;
+    if (!scrollBtn || !arrow) return;
 
-    let scrollTimeout: ReturnType<typeof setTimeout>;
-    let wantsToStop = false;
     let lastScrollY = window.scrollY;
+    let lastTime = performance.now();
+    let currentRotation = 0;
     let isClicked = false;
+    let settleTimer: ReturnType<typeof setTimeout> | null = null;
 
-    arrow?.addEventListener('animationiteration', () => {
-      if (wantsToStop) {
-        scrollBtn.classList.remove('is-scrolling');
-        wantsToStop = false;
-      }
-    });
+    function settleToUp() {
+      // Snap to nearest 360° multiple (i.e. pointing up)
+      const target = Math.round(currentRotation / 360) * 360;
+      currentRotation = target;
+      arrow.style.transform = `rotate(${target}deg)`;
+    }
 
     scrollBtn.addEventListener('click', () => {
       isClicked = true;
       scrollBtn.classList.add('clicked');
-      scrollBtn.classList.remove('is-scrolling');
-      wantsToStop = false;
+      currentRotation = Math.round(currentRotation / 360) * 360;
+      arrow.style.transform = `rotate(${currentRotation}deg)`;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
     function onScroll() {
       const scrollY = window.scrollY;
+      const now = performance.now();
+      const deltaY = scrollY - lastScrollY;
+      const deltaTime = now - lastTime;
 
-      // Re-enable on scroll down
-      if (scrollY > lastScrollY && isClicked) {
+      // Re-enable on scroll down after click
+      if (deltaY > 0 && isClicked) {
         isClicked = false;
         scrollBtn.classList.remove('clicked');
       }
-      lastScrollY = scrollY;
 
       // Toggle visibility
       scrollBtn.classList.toggle('visible', scrollY > 300);
 
-      // Spin animation (skip if clicked)
-      if (!isClicked) {
-        wantsToStop = false;
-        scrollBtn.classList.add('is-scrolling');
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => { wantsToStop = true; }, 100);
+      // Rotate arrow based on scroll velocity (skip if clicked)
+      if (!isClicked && deltaTime > 0) {
+        const rotationDelta = deltaY * 0.5;
+        currentRotation += rotationDelta;
+        arrow.style.transform = `rotate(${currentRotation}deg)`;
       }
+
+      // Reset settle timer — snap back to up when scrolling stops
+      if (settleTimer) clearTimeout(settleTimer);
+      settleTimer = setTimeout(settleToUp, 150);
+
+      lastScrollY = scrollY;
+      lastTime = now;
+    }
+
+    function syncVisibility() {
+      scrollBtn.classList.toggle('visible', window.scrollY > 300);
     }
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+
+    // Check immediately and after scroll restoration (browser may restore
+    // scroll position after DOMContentLoaded / paint)
+    syncVisibility();
+    requestAnimationFrame(syncVisibility);
   }
 
   initScrollToTop();
