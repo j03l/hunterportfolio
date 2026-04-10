@@ -47,44 +47,31 @@ When setting up in Cloudflare:
 
 ## Architecture
 
-The project follows a component-based architecture with all customization centralized in `src/config.ts`:
+Component-based Astro site with two content layers:
 
-- **Components** (`src/components/`): Individual Astro components for each section (Hero, About, Projects, Experience, Education, Header, Footer)
-- **Main Layout** (`src/pages/index.astro`): Single-page layout that imports all components
-- **Configuration** (`src/config.ts`): Single source of truth for all content and customization
+- **Portfolio config** (`src/config.ts`): Single source of truth for name, social links, skills, projects, experience, education. Sections hide automatically if their data is removed.
+- **Content collections** (`src/content/`): Blog posts (`blog/`) and project case studies (`projects/`) using Astro content collections with Zod schemas defined in `src/content/config.ts`.
 
-### Key Architectural Decisions
+### Key Directories
 
-1. **Single Configuration File**: All content is managed through `src/config.ts` to make customization simple
-2. **Conditional Rendering**: Sections automatically hide if their data is removed from the config
-3. **Component Independence**: Each section is a self-contained component that reads from the config
-4. **Accent Color System**: Single `accentColor` in config propagates throughout the site via CSS custom properties
+- `src/components/` — Astro components (portfolio sections, blog components, nav, scroll-to-top)
+- `src/layouts/BlogPost.astro` — Blog post layout with prose styling, popout code blocks/images, and hero image support
+- `src/pages/` — Routes: index, blog, projects, cv, rss, 404
+- `public/blog/` — Static assets for blog posts (images, video)
 
-## Important Implementation Details
+### Blog System
 
-- The site uses Tailwind CSS v4 with the Vite plugin configuration
-- No linting or testing framework is currently configured
-- All components are in `.astro` format (not React/Vue/etc)
-- The project uses IBM Plex Mono font loaded from Google Fonts
-- Social links in the config are all optional and will conditionally render
+- Blog posts are MDX files in `src/content/blog/`
+- Custom MDX components: Callout, SkeletonDemo, MermaidChart, SpecTable, ColorSwatch
+- Code blocks use `astro-expressive-code`
+- Schema fields: title, description, pubDate, heroImage, heroCaption, tags, readTime, draft
 
-## Working with Components
+## Code Style
 
-When modifying components:
-
-1. Components read directly from the imported `siteConfig` object
-2. Use Tailwind utility classes for styling
-3. Maintain the existing monospace font aesthetic
-4. Use Tabler Icons for consistency with existing icons
-
-## Configuration Structure
-
-The `src/config.ts` exports a `siteConfig` object with these sections:
-
-- Basic info: name, title, description, accentColor
-- Social links: email, linkedin, twitter, github (all optional)
-- aboutMe: string
-- skills: string[]
-- projects: array of {name, description, link, skills}
-- experience: array of {company, title, dateRange, bullets}
-- education: array of {school, degree, dateRange, achievements}
+- All components are `.astro` — no React/Vue
+- Tailwind utility classes for all styling; maintain the monospace aesthetic (IBM Plex Mono)
+- Use semantic HTML and Tabler Icons
+- Accent color propagates via CSS custom properties (`accentColor` / `accentColorDark` in config)
+- Portfolio content changes go in `src/config.ts`, not in components
+- New portfolio sections should render conditionally based on config data
+- No linting or test framework configured
