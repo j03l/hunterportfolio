@@ -4,7 +4,6 @@ import tailwindcss from "@tailwindcss/vite";
 import cloudflare from "@astrojs/cloudflare";
 import expressiveCode from "astro-expressive-code";
 import mdx from "@astrojs/mdx";
-
 // https://astro.build/config
 export default defineConfig({
   site: "https://hunterportfolio.pages.dev",
