@@ -14,13 +14,14 @@ interface Props {
   description: string;
   pubDate: Date;
   heroImage?: string;
+  heroCaption?: string;
   tags?: string[];
   readTime?: string;
   slug: string;
   resources?: Resource[];
 }
 
-const { title, description, pubDate, heroImage, tags = [], readTime, slug, resources = [] } = Astro.props;
+const { title, description, pubDate, heroImage, heroCaption, tags = [], readTime, slug, resources = [] } = Astro.props;
 
 const formattedDate = pubDate.toLocaleDateString("en-US", {
   year: "numeric",
@@ -158,11 +159,16 @@ const imageURL = heroImage ? new URL(heroImage, Astro.site).toString() : undefin
       </header>
       {
         heroImage && (
-          <img
-            src={heroImage}
-            alt=""
-            class="full w-full rounded-lg mb-12 shadow-sm"
-          />
+          <figure class="popout mb-12">
+            <img
+              src={heroImage}
+              alt=""
+              class="w-full rounded-lg shadow-sm"
+            />
+            {heroCaption && (
+              <figcaption class="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">{heroCaption}</figcaption>
+            )}
+          </figure>
         )
       }
       <div class="prose prose-gray dark:prose-invert max-w-none">
@@ -305,7 +311,8 @@ const imageURL = heroImage ? new URL(heroImage, Astro.site).toString() : undefin
     line-height: 1.75;
   }
 
-  /* Code block breakout using negative margins */
+  /* Breakout elements inside prose (code blocks, images, tables, videos) */
+  .prose .popout,
   .prose .expressive-code {
     --popout-size: 2rem;
     margin-left: calc(var(--popout-size) * -1);
@@ -315,6 +322,7 @@ const imageURL = heroImage ? new URL(heroImage, Astro.site).toString() : undefin
   }
 
   @media (max-width: 768px) {
+    .prose .popout,
     .prose .expressive-code {
       --popout-size: 0rem;
     }
