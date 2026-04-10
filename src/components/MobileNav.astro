@@ -111,25 +111,88 @@ const isCVPage = currentPath === "/cv" || currentPath === "/cv/";
     if (!btn || !backdrop || !sheet) return;
 
     let isOpen = false;
+    let scrollY = 0;
+
+    // Prevent touch events from scrolling the page behind the modal
+    function preventTouchScroll(e: TouchEvent) {
+      // Allow scrolling within the sheet itself if it has overflow
+      const target = e.target as HTMLElement;
+      if (sheet.contains(target)) {
+        return;
+      }
+      e.preventDefault();
+    }
 
     function open() {
       isOpen = true;
+
+      // CRITICAL: Save scroll position FIRST, before ANY DOM changes
+      scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+
+      /*
+       * iOS Safari scroll lock - synchronous atomic style application
+       *
+       * The visual jump occurs when position:fixed is applied and the browser
+       * renders a frame before the negative top offset takes effect.
+       *
+       * Solution: Apply the inline style for top DIRECTLY (not via CSS variable)
+       * at the same time as the class. This ensures the browser sees both
+       * position:fixed AND the correct top offset in the same style calculation.
+       *
+       * We apply the top value as an inline style because inline styles have
+       * higher specificity and are applied atomically with other style changes.
+       */
+
+      // Apply inline styles directly to body for atomic application
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+
+      // Add classes for additional styles (background color, touch-action, etc.)
+      document.documentElement.classList.add('mobile-nav-open');
+      document.body.classList.add('mobile-nav-body-lock');
+
+      // Apply all visual state changes
       btn.classList.add('is-open');
       btn.setAttribute('aria-expanded', 'true');
       backdrop.classList.add('is-visible');
       sheet.classList.add('is-open');
       sheet.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
+
+      // Add touch event prevention for iOS Safari (as backup)
+      document.addEventListener('touchmove', preventTouchScroll, { passive: false });
     }
 
     function close() {
       isOpen = false;
+
+      // Remove touch event listener
+      document.removeEventListener('touchmove', preventTouchScroll);
+
+      // Remove inline styles from body (this removes position:fixed)
+      document.body.style.removeProperty('position');
+      document.body.style.removeProperty('top');
+      document.body.style.removeProperty('left');
+      document.body.style.removeProperty('right');
+      document.body.style.removeProperty('width');
+      document.body.style.removeProperty('overflow');
+
+      // Remove classes
+      document.body.classList.remove('mobile-nav-body-lock');
+      document.documentElement.classList.remove('mobile-nav-open');
+
+      // Restore scroll position immediately
+      window.scrollTo(0, scrollY);
+
+      // Update UI state
       btn.classList.remove('is-open');
       btn.setAttribute('aria-expanded', 'false');
       backdrop.classList.remove('is-visible');
       sheet.classList.remove('is-open');
       sheet.setAttribute('aria-hidden', 'true');
-      document.body.style.overflow = '';
     }
 
     btn.addEventListener('click', () => isOpen ? close() : open());
@@ -147,6 +210,54 @@ const isCVPage = currentPath === "/cv" || currentPath === "/cv/";
 </script>
 
 <style is:global>
+  /* When nav is open, change html background to match nav sheet */
+  /* This fills the gap between nav and Safari toolbar with the same color */
+  /* No transition - change happens instantly on button press */
+  @media (max-width: 767px) {
+    html.mobile-nav-open,
+    html.mobile-nav-open body {
+      background-color: rgb(255, 255, 255) !important; /* white - matches light nav */
+      transition: none !important;
+    }
+
+    /*
+     * iOS Safari scroll lock solution
+     *
+     * The visual jump occurs when position:fixed is applied before the
+     * negative top offset takes effect. The browser renders one frame
+     * with position:fixed but top:0, causing the jump.
+     *
+     * Solution: Apply position:fixed and top offset as INLINE STYLES
+     * via JavaScript in a single synchronous operation. Inline styles
+     * are applied atomically, preventing the intermediate state where
+     * position:fixed exists but top is still 0.
+     *
+     * The CSS class here only adds supplementary styles (touch-action,
+     * overscroll-behavior) - the core positioning is done via JS.
+     */
+    html.mobile-nav-open {
+      overflow: hidden !important;
+      overscroll-behavior: none !important;
+    }
+
+    body.mobile-nav-body-lock {
+      /* Core positioning (position, top, left, right, width, overflow)
+         is applied via inline styles in JavaScript for atomic application.
+         These supplementary styles enhance the scroll lock: */
+      touch-action: none !important;
+      overscroll-behavior: none !important;
+      -webkit-overflow-scrolling: auto !important;
+    }
+  }
+
+  @media (max-width: 767px) and (prefers-color-scheme: dark) {
+    html.mobile-nav-open,
+    html.mobile-nav-open body {
+      background-color: rgb(17, 24, 39) !important; /* gray-900 - matches dark nav base */
+      transition: none !important;
+    }
+  }
+
   /* Only show on mobile */
   .mobile-nav-btn,
   .mobile-nav-backdrop,
@@ -219,16 +330,15 @@ const isCVPage = currentPath === "/cv" || currentPath === "/cv/";
     .mobile-nav-sheet {
       display: block;
       position: fixed;
-      bottom: -50px; /* Extend below viewport to cover iPhone home indicator */
+      bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-top-left-radius: 1.5rem;
       border-top-right-radius: 1.5rem;
       padding: 1.5rem;
-      padding-bottom: calc(1.5rem + 50px + env(safe-area-inset-bottom, 0px));
       z-index: 58;
       transform: translateY(100%);
       transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
@@ -286,7 +396,7 @@ const isCVPage = currentPath === "/cv" || currentPath === "/cv/";
     }
 
     .mobile-nav-sheet {
-      background: rgba(17, 24, 39, 0.85);
+      background: rgba(17, 24, 39, 0.95);
     }
 
     .mobile-nav-link {
