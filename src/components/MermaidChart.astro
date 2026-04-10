@@ -1,0 +1,55 @@
+---
+interface Props {
+  chart: string;
+}
+
+const { chart } = Astro.props;
+const id = `mermaid-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div class="mermaid-container" id={id} data-chart={chart}></div>
+
+<script>
+  async function renderMermaid() {
+    // @ts-ignore
+    const mermaid = (await import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs')).default;
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'dark',
+      themeVariables: {
+        primaryColor: '#1a1428',
+        primaryTextColor: '#bac3ff',
+        primaryBorderColor: '#bac3ff',
+        lineColor: '#8288b2',
+        secondaryColor: '#080417',
+        tertiaryColor: '#1a1428',
+        fontFamily: "'IBM Plex Mono', monospace",
+        fontSize: '13px',
+      },
+    });
+
+    const containers = document.querySelectorAll('.mermaid-container');
+    for (const container of containers) {
+      const chart = (container as HTMLElement).dataset.chart;
+      if (chart && !container.querySelector('svg')) {
+        const { svg } = await mermaid.render(container.id + '-svg', chart);
+        container.innerHTML = svg;
+      }
+    }
+  }
+
+  renderMermaid();
+</script>
+
+<style>
+  .mermaid-container {
+    margin: 1.5rem 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .mermaid-container :global(svg) {
+    max-width: 100%;
+    height: auto;
+  }
+</style>

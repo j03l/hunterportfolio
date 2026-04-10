@@ -1,0 +1,181 @@
+---
+title: "Building a Modern Skeleton Loader"
+description: "Why I prototyped a skeleton loader instead of using a spinner, the design decisions behind it, and how I turned a working prototype into a production-ready Jira spec."
+pubDate: 2025-07-23
+tags: ["ux", "css", "vue", "prototyping"]
+readTime: "8 min read"
+draft: false
+heroImage: "/blog/skeleton-loader/skeleton-loader-youtube-white.png"
+heroCaption: "YouTube's skeleton loader (placeholder cards before content arrives)"
+resources:
+  - title: "Avoid The Spinner - Luke Wroblewski (2013)"
+    url: "https://www.lukew.com/ff/entry.asp?1797"
+  - title: "Skeleton Screens 101 - Nielsen Norman Group"
+    url: "https://www.nngroup.com/articles/skeleton-screens/"
+  - title: "PatternFly Skeleton Guidelines - Red Hat"
+    url: "https://www.patternfly.org/components/skeleton/design-guidelines/"
+  - title: "Optimizing Animation Speed - Journal of Consumer Research (2025)"
+    url: "https://academic.oup.com/jcr/advance-article/doi/10.1093/jcr/ucaf037/8165440"
+  - title: "What You Should Know About Skeleton Screens - Bill Chung"
+    url: "https://uxdesign.cc/what-you-should-know-about-skeleton-screens-a820c45a571a"
+  - title: "Facebook Shimmer for iOS (archived)"
+    url: "https://github.com/facebookarchive/Shimmer"
+---
+
+import Callout from '../../components/Callout.astro';
+import SkeletonDemo from '../../components/SkeletonDemo.astro';
+import MermaidChart from '../../components/MermaidChart.astro';
+import SpecTable from '../../components/SpecTable.astro';
+import ColorSwatch from '../../components/ColorSwatch.astro';
+
+Open YouTube on your phone right now. Before any thumbnails load, you'll see grey rectangles where the video cards will be, smaller bars where the titles go, little circles where the channel avatars sit. Same thing on Facebook, LinkedIn, Slack, Airbnb. You probably don't notice it anymore because it's everywhere, but ten years ago none of these apps did this.
+
+[Luke Wroblewski](https://www.lukew.com/ff/entry.asp?1797) figured out why spinners were a problem back in 2013. He was building the Polar app and users kept complaining about slow load times, even though nothing had actually gotten slower. The spinners he'd added were making people *watch the wait*. Like staring at a clock.
+
+He replaced them with placeholder screens that gradually filled with content, and the complaints stopped. Facebook picked up the idea almost immediately for their [Paper app](https://x.com/lukew/status/430742615110062080) in 2014, eventually open-sourcing their [Shimmer library](https://github.com/facebookarchive/Shimmer) for iOS and Android.
+
+I was dealing with a version of this on a Magento 2 e-commerce site I manage. Worse than spinners, actually. The search had no loading state at all.
+
+## The problem
+
+The site runs a Vue 3 SPA with a search dropdown split into three sections: Categories, Products, and Articles. Type a query and there's a debounce timer, then an API call, then results render. During all of that: nothing on screen. No spinner, no skeleton, no acknowledgement.
+
+It wasn't isolated to search either. Product variant selectors had the same gap. Change a colour and the size dropdown silently reloads with different options. Customers were placing wrong orders because they didn't realise their selected size had changed underneath them.
+
+I started with search because the dropdown has a known, consistent layout.
+
+<Callout type="info" title="Skeleton or spinner?">
+[Red Hat's PatternFly guidelines](https://www.patternfly.org/components/skeleton/design-guidelines/) have a clear rule: use skeletons when you know what the loaded layout looks like. Use spinners when the structure is uncertain, when empty states are likely, or when multiple elements load at different speeds.
+</Callout>
+
+## Pulling the production CSS
+
+I grabbed the full production stylesheet from the live site. 269KB of compiled CSS with Vue scoped styles, Magento utility classes, the lot. Dropped it into a local folder and started building my prototype directly on top of it.
+
+This meant I could use the site's actual class names: `.suggestion-block`, `.c-bg-primary`, `.pl27`, `.pt17`, `.brdr-top-1`, `.c-brdr-melrose`. Same padding, same borders, same font sizes as production. When the developer opened my prototype, they'd recognise their own codebase with a new feature dropped in, not a mockup that needed translation.
+
+Here's a recording of the prototype in action:
+
+<div class="popout">
+<video src="/blog/skeleton-loader/skeleton-demo.mp4" autoplay loop muted playsinline style="width: 100%; border-radius: 8px; margin: 1rem 0;"></video>
+</div>
+
+## Colour decisions
+
+Most skeleton implementations use grey bars on white. YouTube does <ColorSwatch hex="#e0e0e0" /> on <ColorSwatch hex="#ffffff" />. That works for light interfaces. This site has a <ColorSwatch hex="#080417" /> background. Dropping grey bars onto near-black would look broken, not loading.
+
+I pulled the gradient colours from the site's existing melrose accent: <ColorSwatch hex="#8288b2" /> sweeping to <ColorSwatch hex="#bac3ff" />.
+
+```css
+.skeleton {
+    background: linear-gradient(90deg, #8288b2 25%, #bac3ff 50%, #8288b2 75%);
+    background-size: 200% 100%;
+    animation: eagle-skeleton-loading 1.8s infinite;
+}
+```
+
+On the dark background, it reads as a cool-toned pulse that belongs to the brand.
+
+The 1.8-second animation cycle came from research and a bit of guesswork. *I really just wanted the site to not feel like it was loading!*
+
+<Callout type="info" title="Animation speed matters">
+A [2025 study in the Journal of Consumer Research](https://academic.oup.com/jcr/advance-article/doi/10.1093/jcr/ucaf037/8165440) tested ~7,000 participants and found moderate-speed animations (2,000–2,500ms per cycle) minimise perceived waiting time. Too slow feels stuck, too fast feels frantic. 1.8s lands right at the edge of that window.
+</Callout>
+
+## Making the search feel interactive
+
+Static bars were my first attempt. Same count, same widths, every keystroke. It looked obviously fake. The identical pattern repeating on every search broke any illusion that real content was loading.
+
+I ended up randomising three layers on each keystroke:
+
+```javascript
+const generateRandomSizes = () => {
+    // How many items per section (2-6)
+    categoryCount.value = Math.floor(Math.random() * 5) + 2;
+    productCount.value  = Math.floor(Math.random() * 5) + 2;
+    articleCount.value  = Math.floor(Math.random() * 5) + 2;
+
+    // How wide each bar (from calibrated width classes)
+    categorySizes.value = Array(categoryCount.value)
+        .fill()
+        .map(() => categoryWidthClasses[
+            Math.floor(Math.random() * categoryWidthClasses.length)
+        ]);
+};
+```
+
+CSS handles the third layer with staggered delays. Each bar starts its shimmer 100ms after the one above, so you get a wave rolling downward rather than everything pulsing together.
+
+```css
+.skeleton-item:nth-child(1) { animation-delay: 0s; }
+.skeleton-item:nth-child(2) { animation-delay: 0.1s; }
+.skeleton-item:nth-child(3) { animation-delay: 0.2s; }
+```
+
+I originally calibrated the bar widths to match actual content lengths from the store. 45px for a category called "Top", 280px for a product called "Rubber Sleeveless T-Shirt - Black." I thought the widths had to be exact. They really don't. Once the randomisation was running, the shifting widths communicated "results are on their way" without needing to preview exact content shapes.
+
+<Callout type="warning" title="Pixel accuracy is a trap">
+[Bill Chung's research](https://uxdesign.cc/what-you-should-know-about-skeleton-screens-a820c45a571a) on skeleton screens found that what matters is structural accuracy, not dimensional replication. Show *where* content goes and *roughly how much*. The exact widths don't register — users aren't comparing skeleton bars to the content that replaces them.
+</Callout>
+
+The randomness ended up being the feature. Every search produces a different loading pattern, which makes the interface feel like it's actively working rather than displaying a static placeholder.
+
+Try it yourself: type in the search box, hit "Simulate Search" a few times, or toggle between skeleton and results:
+
+<SkeletonDemo />
+
+<Callout type="info" title="The decoupling decision">
+The skeleton appears on the keystroke. The search API fires on the debounce timer. Two separate events. If the skeleton only showed when the request started, you'd still have a dead gap between typing and seeing anything.
+</Callout>
+
+## Handing it off
+
+Here's how the whole process looked:
+
+<MermaidChart chart={`graph TD
+    A[Spot UX gap while investigating client bug] --> B[Extract production CSS]
+    B --> C[Build working prototype on real markup]
+    C --> D[Decide on animation speed, colours, randomisation]
+    D --> E[Write Jira ticket as config reference]
+    E --> E1[User story]
+    E --> E2[Variable table]
+    E --> E3["Embedded code (CSS, JS, Vue)"]
+    E --> E4[Acceptance criteria]
+    E1 & E2 & E3 & E4 --> F[Developer adapts prototype to production]`} />
+
+I wrote the Jira ticket as a configuration reference rather than a description. Every variable the developer needed:
+
+<div class="popout">
+<SpecTable rows={[
+  { variable: "Random Counts", value: "2–6 per section", rationale: "Enough variation to look organic; not so many it overflows" },
+  { variable: "Category Widths", value: "45, 65, 85, 110, 135, 160px", rationale: "Calibrated to real category name lengths" },
+  { variable: "Product Widths", value: "90, 130, 170, 210, 250, 280px", rationale: "Calibrated to real product name lengths" },
+  { variable: "Article Widths", value: "120, 160, 200, 240, 280px", rationale: "Calibrated to article title lengths" },
+  { variable: "Animation", value: "1.8s infinite gradient sweep", rationale: "Moderate speed for minimal perceived wait" },
+  { variable: "Stagger", value: "0.1s per item via nth-child", rationale: "Cascading wave, not uniform pulse" },
+  { variable: "Colours", value: "#8288b2 → #bac3ff on #080417", rationale: "Derived from the site's melrose accent palette" },
+  { variable: "Randomisation", value: "Regenerate on each keystroke", rationale: "Every search shows a unique loading pattern" },
+]} />
+</div>
+
+The ticket included copy-pasteable CSS, JavaScript, and Vue template code lifted straight from my working prototype. Not pseudocode. Three acceptance criteria:
+
+1. Skeleton loader across all 3 search sections
+2. Loader persists while the search request processes
+3. Loader disappears when results display or the query is cleared
+
+Between the variable table, the code snippets, and the acceptance criteria, the developer had everything they needed to build this without a single clarification question. They could also just open my HTML prototype in a browser and see the finished result.
+
+## The result
+
+It shipped. Here's what it looks like live on the production site:
+
+<img src="/blog/skeleton-loader/skeleton-live.png" alt="Skeleton loader running on the production search dropdown" style="max-width: 400px; width: 100%; border-radius: 8px; margin: 0 auto; display: block;" />
+
+---
+
+Seeing my prototype running on the live site was genuinely exciting. I'd spent time getting the colours right, tuning the animation speed, calibrating the randomisation, writing up every variable so the developer wouldn't have to guess. And then it was just *there*, on production, working exactly how I'd built it in my local HTML file. The gap between what I prototyped and what shipped was almost nothing.
+
+If you're handing work to another developer, whether offshore, a contractor, or a future teammate: build the thing. A working HTML file removes ambiguity that words can't.
+
+I spent a weekend getting the shimmer timing right for a search box most people never notice. I'd do it again.

@@ -1,0 +1,19 @@
+---
+interface Props {
+  hex: string;
+}
+
+const { hex } = Astro.props;
+---
+<span class="color-swatch"><span class="swatch-circle" style={`background-color: ${hex};`}></span><strong>{hex}</strong></span><style>
+  .swatch-circle {
+    display: inline-block;
+    width: 0.55em;
+    height: 0.55em;
+    vertical-align: middle;
+    margin-right: 0.2em;
+    border-radius: 50%;
+    outline: 1px solid rgba(128, 128, 128, 0.3);
+    outline-offset: 1px;
+  }
+</style>

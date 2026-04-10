@@ -1,0 +1,340 @@
+---
+// Interactive skeleton loader demo for the blog post
+// Self-contained: HTML + CSS + vanilla JS, no framework needed
+---
+
+<div class="skeleton-demo" id="skeleton-demo">
+  <div class="demo-controls">
+    <button class="demo-btn active" data-view="skeleton">Skeleton Loading</button>
+    <button class="demo-btn" data-view="real">Search Results</button>
+    <button class="demo-btn demo-btn-accent" id="demo-loading">Simulate Search</button>
+  </div>
+
+  <div class="demo-search-container">
+    <input
+      type="text"
+      class="demo-search-input"
+      placeholder="Search"
+      id="demo-search"
+      value="shirt"
+    />
+    <button class="demo-search-clear" id="demo-clear" aria-label="Clear search">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6L18 18" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <div class="demo-dropdown" id="demo-dropdown">
+    <div class="demo-section">
+      <span class="demo-section-label">CATEGORIES</span>
+      <div class="demo-items" id="demo-categories"></div>
+    </div>
+    <div class="demo-section demo-section-border">
+      <span class="demo-section-label">PRODUCTS</span>
+      <div class="demo-items" id="demo-products"></div>
+    </div>
+    <div class="demo-section demo-section-border">
+      <span class="demo-section-label">ARTICLES</span>
+      <div class="demo-items" id="demo-articles"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .skeleton-demo {
+    max-width: 420px;
+    margin: 2rem auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Montserrat', sans-serif;
+    font-size: 12px;
+    line-height: 18px;
+    letter-spacing: 0.19px;
+  }
+
+  .demo-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .demo-btn {
+    background: #080417;
+    color: #bac3ff;
+    border: 1px solid #bac3ff;
+    padding: 6px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    font-family: inherit;
+  }
+
+  .demo-btn:hover {
+    background: #1a1428;
+  }
+
+  .demo-btn.active {
+    background: #bac3ff;
+    color: #080417;
+  }
+
+  .demo-btn-accent {
+    border-color: #36c696;
+    color: #36c696;
+  }
+
+  .demo-btn-accent:hover {
+    background: #36c696;
+    color: #080417;
+  }
+
+  .demo-search-container {
+    position: relative;
+    margin-bottom: 0;
+  }
+
+  .demo-search-input {
+    width: 100%;
+    padding: 12px 40px 12px 16px;
+    background: #080417;
+    border: 2px solid #bac3ff;
+    color: white;
+    outline: none;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+  }
+
+  .demo-search-input::placeholder {
+    color: #e1dee2;
+  }
+
+  .demo-search-clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .demo-search-clear svg {
+    width: 20px;
+    height: 20px;
+    stroke: #bac3ff;
+    transition: stroke 0.15s;
+  }
+
+  .demo-search-clear:hover svg {
+    stroke: #36c696;
+  }
+
+  .demo-dropdown {
+    background: #080417;
+    border: 2px solid #bac3ff;
+    border-top: none;
+  }
+
+  .demo-section {
+    padding: 17px 27px;
+  }
+
+  .demo-section-border {
+    border-top: 2px solid #bac3ff;
+  }
+
+  .demo-section-label {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  .demo-items {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  /* Dynamic elements created by JS — must be :global to avoid scoping */
+  .demo-items :global(.demo-skeleton-bar) {
+    height: 12px;
+    background: linear-gradient(90deg, #8288b2 25%, #bac3ff 50%, #8288b2 75%);
+    background-size: 200% 100%;
+    animation: demo-shimmer 1.8s infinite;
+  }
+
+  @keyframes demo-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .demo-items :global(.demo-real-item) {
+    color: #fff;
+    cursor: pointer;
+    transition: color 0.15s;
+    padding: 1px 0;
+  }
+
+  .demo-items :global(.demo-real-item:hover) {
+    color: #36c696;
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    var categoryWidths = [45, 65, 85, 110, 135, 160];
+    var productWidths = [90, 130, 170, 210, 250, 280];
+    var articleWidths = [120, 160, 200, 240, 280];
+
+    var realCategories = [
+      'Clothing >> T-Shirts',
+      'Clothing >> Outerwear',
+      'Accessories >> Bags',
+      'Footwear >> Boots'
+    ];
+
+    var realProducts = [
+      'Classic T-Shirt - Black',
+      'Heavyweight Crew Tee - White',
+      'Relaxed Fit Tee',
+      'Relaxed Fit Tee - Orange',
+      'Vintage Wash T-Shirt - Black',
+      'Sleeveless Performance Shirt - Black'
+    ];
+
+    var currentView = 'skeleton';
+    var searchTimeout = null;
+
+    function randomCount() {
+      return Math.floor(Math.random() * 5) + 2;
+    }
+
+    function randomWidth(widths) {
+      return widths[Math.floor(Math.random() * widths.length)];
+    }
+
+    function renderSkeleton(container, widths) {
+      var count = randomCount();
+      container.innerHTML = '';
+      for (var i = 0; i < count; i++) {
+        var bar = document.createElement('div');
+        bar.className = 'demo-skeleton-bar';
+        bar.style.width = randomWidth(widths) + 'px';
+        bar.style.animationDelay = (i * 0.1) + 's';
+        container.appendChild(bar);
+      }
+    }
+
+    function renderReal(container, items) {
+      container.innerHTML = '';
+      items.forEach(function(text) {
+        var el = document.createElement('div');
+        el.className = 'demo-real-item';
+        el.textContent = text;
+        container.appendChild(el);
+      });
+    }
+
+    function renderArticlesReal(container) {
+      container.innerHTML = '';
+      var el = document.createElement('div');
+      el.className = 'demo-real-item';
+      el.textContent = 'No results were found.';
+      el.style.cursor = 'default';
+      container.appendChild(el);
+    }
+
+    function renderAll(view) {
+      var cats = document.getElementById('demo-categories');
+      var prods = document.getElementById('demo-products');
+      var arts = document.getElementById('demo-articles');
+      if (!cats || !prods || !arts) return;
+
+      if (view === 'skeleton') {
+        renderSkeleton(cats, categoryWidths);
+        renderSkeleton(prods, productWidths);
+        renderSkeleton(arts, articleWidths);
+      } else {
+        renderReal(cats, realCategories);
+        renderReal(prods, realProducts);
+        renderArticlesReal(arts);
+      }
+    }
+
+    function setActiveButton(view) {
+      document.querySelectorAll('.demo-btn[data-view]').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.view === view);
+      });
+    }
+
+    // Init
+    renderAll('skeleton');
+
+    // Toggle buttons
+    document.querySelectorAll('.demo-btn[data-view]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        currentView = btn.dataset.view;
+        setActiveButton(currentView);
+        renderAll(currentView);
+      });
+    });
+
+    // Loading demo — skeleton then transition to real after 2.5s
+    var loadingBtn = document.getElementById('demo-loading');
+    if (loadingBtn) {
+      loadingBtn.addEventListener('click', function() {
+        if (searchTimeout) clearTimeout(searchTimeout);
+        currentView = 'skeleton';
+        setActiveButton('skeleton');
+        renderAll('skeleton');
+        searchTimeout = setTimeout(function() {
+          currentView = 'real';
+          setActiveButton('real');
+          renderAll('real');
+        }, 2500);
+      });
+    }
+
+    // Search input
+    var searchInput = document.getElementById('demo-search');
+    var clearBtn = document.getElementById('demo-clear');
+
+    if (searchInput && clearBtn) {
+      searchInput.addEventListener('input', function() {
+        if (searchTimeout) clearTimeout(searchTimeout);
+
+        if (searchInput.value.trim()) {
+          clearBtn.style.display = 'flex';
+          currentView = 'skeleton';
+          setActiveButton('skeleton');
+          renderAll('skeleton');
+
+          searchTimeout = setTimeout(function() {
+            currentView = 'real';
+            setActiveButton('real');
+            renderAll('real');
+          }, 2000);
+        } else {
+          clearBtn.style.display = 'none';
+        }
+      });
+
+      clearBtn.addEventListener('click', function() {
+        if (searchTimeout) clearTimeout(searchTimeout);
+        searchInput.value = '';
+        clearBtn.style.display = 'none';
+        currentView = 'skeleton';
+        setActiveButton('skeleton');
+        renderAll('skeleton');
+        searchInput.focus();
+      });
+    }
+  })();
+</script>

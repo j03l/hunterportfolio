@@ -1,0 +1,134 @@
+---
+interface Row {
+  variable: string;
+  value: string;
+  rationale: string;
+}
+
+interface Props {
+  rows: Row[];
+}
+
+const { rows } = Astro.props;
+---
+
+<div class="spec-table-wrapper">
+  <table class="spec-table">
+    <thead>
+      <tr>
+        <th>Variable</th>
+        <th>Value</th>
+        <th>Rationale</th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row) => (
+        <tr>
+          <td class="spec-variable">{row.variable}</td>
+          <td><code>{row.value}</code></td>
+          <td class="spec-rationale">{row.rationale}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .spec-table-wrapper {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #374151;
+  }
+
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .spec-table thead {
+    background: #1f2937;
+  }
+
+  .spec-table th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #e5e7eb;
+    border-bottom: 2px solid #374151;
+    white-space: nowrap;
+  }
+
+  .spec-table td {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid #1f2937;
+    color: #d1d5db;
+  }
+
+  .spec-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .spec-table tbody tr:hover {
+    background: rgba(31, 41, 55, 0.5);
+  }
+
+  .spec-variable {
+    font-weight: 600;
+    color: #bac3ff;
+    white-space: nowrap;
+  }
+
+  .spec-table code {
+    background: #1f2937;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #e5e7eb;
+    font-family: 'IBM Plex Mono', monospace;
+    white-space: nowrap;
+  }
+
+  .spec-rationale {
+    font-size: 0.8rem;
+    color: #9ca3af;
+  }
+
+  @media (prefers-color-scheme: light) {
+    .spec-table-wrapper {
+      border-color: #d1d5db;
+    }
+
+    .spec-table thead {
+      background: #f3f4f6;
+    }
+
+    .spec-table th {
+      color: #374151;
+      border-bottom-color: #d1d5db;
+    }
+
+    .spec-table td {
+      color: #4b5563;
+      border-bottom-color: #e5e7eb;
+    }
+
+    .spec-table tbody tr:hover {
+      background: rgba(243, 244, 246, 0.5);
+    }
+
+    .spec-variable {
+      color: #4f46e5;
+    }
+
+    .spec-table code {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .spec-rationale {
+      color: #6b7280;
+    }
+  }
+</style>
